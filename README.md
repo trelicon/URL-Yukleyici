@@ -36,8 +36,9 @@ Komut                   | Açıklama
 ----------------------- | ----------------------------------------    
 `/broadcast`            | Kullanıcılara toplu olarak mesaj gönderme.
 `/help`                 | Yardım komutu.     
-`/delthumb`             | Thumbnail silmek için.
-`/showthumb`            | Thumbnail göster.
+`/delthumb`             | Thumbnail siler.
+`/showthumb`            | Thumbnail gösterir.
+`/status`               | Sunucu bilgilerini gösterir.
 
 ## Kredi ve Teşekkürler
 
