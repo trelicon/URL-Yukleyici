@@ -91,7 +91,7 @@ async def status_handler(_, m: Message):
                 "**⚠️ Kalan Dyno**\n"
                 f"• `{hours}` **Saat ve** `{minutes}` **Dakika\n💯: {quota_percent}%**\n\n"
                 "**❌ Tahmini Kalan Süre**\n"
-                f"• `{day}` **Days**" + '\n\n' + text,
+                f"• `{day}` **Gün**" + '\n\n' + text,
                 parse_mode="Markdown",
                 quote=True
             )
