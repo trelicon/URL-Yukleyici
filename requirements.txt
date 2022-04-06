@@ -1,0 +1,12 @@
+aiohttp
+hachoir
+heroku3
+Pillow
+psutil
+git+https://github.com/pyrogram/pyrogram@master
+requests
+tgcrypto
+git+https://github.com/yt-dlp/yt-dlp
+motor
+https://github.com/Tinche/aiofiles/archive/master.zip
+dnspython
