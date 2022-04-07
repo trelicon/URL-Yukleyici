@@ -34,5 +34,5 @@ Bot cevap vermediyse @thebans ile iletişime geçin"""
             InlineKeyboardButton('🔙 Geri', callback_data='home'), InlineKeyboardButton('✖ Kapat', callback_data='close')
         ]]
     )
-    THUMBNAIL_TEXT = "Thumbail ayarlamak için bana herhangi bir fotoğraf gönderin."
+    THUMBNAIL_TEXT = "Thumbnail ayarlamak için bana herhangi bir fotoğraf gönderin."
     SLOW_URL_DECED = "Dostum, çok yavaş bir URL gibi görünüyor."
