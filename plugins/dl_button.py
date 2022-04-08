@@ -1,8 +1,9 @@
 import logging
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
+    level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
 
 import asyncio
 import aiohttp
@@ -17,12 +18,13 @@ from database.database import db
 
 logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from functions.display_progress import progress_for_pyrogram, humanbytes, TimeFormatter
 from functions.help_Nekmo_ffmpeg import VideoThumb, VideoMetaData, VMMetaData, DocumentThumb, AudioMetaData
 
     
 async def ddl_call_back(bot, update):
-    logger.info(update)
+    LOGGER.info(update)
     cb_data = update.data
     # yt_dlp extractors
     dtime = str(time.time())
@@ -49,8 +51,8 @@ async def ddl_call_back(bot, update):
         if custom_file_name is not None:
             custom_file_name = custom_file_name.strip()
         # https://stackoverflow.com/a/761825/4723940
-        logger.info(yt_dlp_url)
-        logger.info(custom_file_name)
+        LOGGER.info(yt_dlp_url)
+        LOGGER.info(custom_file_name)
     else:
         for entity in update.message.reply_to_message.entities:
             if entity.type == "text_link":
@@ -59,12 +61,12 @@ async def ddl_call_back(bot, update):
                 o = entity.offset
                 l = entity.length
                 yt_dlp_url = yt_dlp_url[o:o + l]
-    user = await bot.get_me()
-    mention = user["mention"]
-    description = Translation.CUSTOM_CAPTION_UL_FILE.format(mention)
+    #user = await bot.get_me()
+    #mention = user["mention"]
+    #description = Translation.CUSTOM_CAPTION_UL_FILE.format(mention)
     start = datetime.now()
     await bot.edit_message_text(
-        text=Translation.DOWNLOAD_START,
+        text=Translation.DOWNLOAD_START.format(custom_file_name),
         chat_id=update.message.chat.id,
         message_id=update.message.message_id
     )
@@ -119,6 +121,10 @@ async def ddl_call_back(bot, update):
         else:
 
             start_time = time.time()
+            btn = [[
+                InlineKeyboardButton(f"Upload By {update.from_user.id}", url=f"tg://user?id={update.from_user.id}")
+            ]]
+            reply_markup = InlineKeyboardMarkup(btn)
             # try to upload file
             if (await db.get_upload_as_doc(update.from_user.id)) is False:
                 thumbnail = await DocumentThumb(bot, update)
@@ -127,8 +133,9 @@ async def ddl_call_back(bot, update):
                     chat_id=update.message.chat.id,
                     document=download_directory,
                     thumb=thumbnail,
-                    caption=description,
+                    caption=custom_file_name,
                     reply_to_message_id=update.message.reply_to_message.message_id,
+                    reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -145,13 +152,14 @@ async def ddl_call_back(bot, update):
                 video = await bot.send_video(
                     chat_id=update.message.chat.id,
                     video=download_directory,
-                    caption=description,
+                    caption=custom_file_name,
                     duration=duration,
                     width=width,
                     height=height,
                     supports_streaming=True,
                     thumb=thumb_image_path,
                     reply_to_message_id=update.message.reply_to_message.message_id,
+                    reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -169,11 +177,12 @@ async def ddl_call_back(bot, update):
                 audio = await bot.send_audio(
                     chat_id=update.message.chat.id,
                     audio=download_directory,
-                    caption=description,
+                    caption=custom_file_name,
                     parse_mode="HTML",
                     duration=duration,
                     thumb=thumbnail,
                     reply_to_message_id=update.message.reply_to_message.message_id,
+                    reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -238,7 +247,7 @@ async def download_coroutine(bot, session, url, file_name, chat_id, message_id, 
         await bot.edit_message_text(
             chat_id,
             message_id,
-            text="""İndirme Başlatılıyor
+            text="""İndirme Başlatılıyor..
 URL: {}
 Boyut: {}""".format(url, humanbytes(total_length))
         )
@@ -277,6 +286,6 @@ Süre: {}""".format(
                             )
                             display_message = current_message
                     except Exception as e:
-                        logger.info(str(e))
+                        LOGGER.info(str(e))
                         pass
         return await response.release()
