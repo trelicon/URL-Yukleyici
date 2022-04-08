@@ -79,3 +79,6 @@ BUTTON_TEXT = environ.get('SHARE_BUTTON_TEXT', default_button_msg)
 # Heroku
 HEROKU_APP_NAME = environ.get('HEROKU_APP_NAME', None)
 HEROKU_API_KEY = environ.get('HEROKU_API_KEY', None)
+
+# Other
+SEND_LOGS_WHEN_DYING = str(environ.get("SEND_LOGS_WHEN_DYING", "True")).lower() == 'true'
