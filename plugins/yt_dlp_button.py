@@ -118,7 +118,14 @@ async def yt_dlp_call_back(bot, update):
     )
 
     if "fulltitle" in response_json:
-        description = response_json["fulltitle"][0:1021]
+        title = response_json["fulltitle"][0:1021]
+        if "description" in response_json:
+            description = response_json["description"][0:1021]
+            caption = title + "\n\n" + description
+        else:
+            caption = title
+    else:
+        caption = custom_file_name
 
     tmp_directory_for_each_user = os.path.join(
         DOWNLOAD_LOCATION,
@@ -283,7 +290,7 @@ async def yt_dlp_call_back(bot, update):
                     chat_id=update.message.chat.id,
                     document=download_directory,
                     thumb=thumbnail,
-                    caption=custom_file_name,
+                    caption=caption,
                     reply_to_message_id=update.message.reply_to_message.message_id,
                     # reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
@@ -305,7 +312,7 @@ async def yt_dlp_call_back(bot, update):
                 video = await bot.send_video(
                     chat_id=update.message.chat.id,
                     video=download_directory,
-                    caption=custom_file_name,
+                    caption=caption,
                     duration=duration,
                     width=width,
                     height=height,
@@ -331,7 +338,7 @@ async def yt_dlp_call_back(bot, update):
                 audio = await bot.send_audio(
                     chat_id=update.message.chat.id,
                     audio=download_directory,
-                    caption=custom_file_name,
+                    caption=caption,
                     parse_mode="HTML",
                     duration=duration,
                     thumb=thumbnail,
