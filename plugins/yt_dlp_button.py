@@ -277,8 +277,9 @@ async def yt_dlp_call_back(bot, update):
                 pass
 
             start_time = time.time()
+            user = await bot.get_me()
             btn = [[
-                InlineKeyboardButton(f"Upload By {update.from_user.id}", url=f"tg://user?id={update.from_user.id}")
+                InlineKeyboardButton(f"Upload By {user.first_name}", url=f"tg://user?id={user.id}")
             ]]
             reply_markup = InlineKeyboardMarkup(btn)
 
