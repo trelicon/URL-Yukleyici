@@ -250,10 +250,6 @@ async def echo(bot, update):
                             )
                         ]
                     )
-                    inline_keyboard.append([
-                        InlineKeyboardButton(
-                            "✔️ Kapat", callback_data='close')
-                    ])
             else:
                 format_id = current_r_json["format_id"]
                 format_ext = current_r_json["ext"]
@@ -266,6 +262,7 @@ async def echo(bot, update):
                     ]
                 )
             break
+        inline_keyboard.append([InlineKeyboardButton("♨️ İptal et", callback_data='close')])
         reply_markup = InlineKeyboardMarkup(inline_keyboard)
     else:
         # fallback for nonnumeric port a.k.a seedbox.io
@@ -277,6 +274,7 @@ async def echo(bot, update):
                 callback_data=(cb_string_video).encode("UTF-8")
             )
         ])
+        inline_keyboard.append([InlineKeyboardButton("♨️ İptal et", callback_data='close')])
         reply_markup = InlineKeyboardMarkup(inline_keyboard)
         # logger.info(reply_markup)
     thumbnail = DEF_THUMB_NAIL_VID_S
