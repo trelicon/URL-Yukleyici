@@ -5,6 +5,7 @@ from database.add import add_user_to_database
 from functions.forcesub import handle_force_subscribe
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
+
 @Client.on_message(filters.private & filters.command(["start", "help"]))
 async def start(bot: Client, event: Message):
     if not event.from_user:
@@ -20,6 +21,7 @@ async def start(bot: Client, event: Message):
         reply_markup=Translation.START_BUTTONS
     )
 
+
 @Client.on_message(filters.private & filters.command(["ayarlar", "settings"]))
 async def delete_thumb_handler(bot: Client, event: Message):
     if not event.from_user:
@@ -30,8 +32,9 @@ async def delete_thumb_handler(bot: Client, event: Message):
         if fsub == 400:
             return
     await event.reply_text(
-        Translation.SETTİNGS,
+        Translation.SETTINGS,
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton("⚙ Ayarlar", callback_data="Settings")]
-        ])
+        ]),
+        parse_mode='markdown'
     )
