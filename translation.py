@@ -23,6 +23,7 @@ URL | dosyaismi.mp4"""
     DEL_ETED_CUSTOM_THUMB_NAIL = "**🗑️ Kapak fotoğrafı başarıyla temizlendi.**"
     CUSTOM_CAPTION_UL_FILE = "{}"
     NO_VOID_FORMAT_FOUND = "HATA...\n<b>YouTubeDL</b>: {}"
+    SETTİNGS = "**Ayarlarlarınızı buradan yapabilirsiniz.**"
     HELP_TEXT = """Nasıl kullanılır? Aşağıdaki adımları izleyin!
     
 1. URL gönderin.
