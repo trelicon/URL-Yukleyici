@@ -62,7 +62,7 @@ async def yt_dlp_call_back(bot, update):
     # TODO: temporary limitations
     # LOGGER.info(response_json)
     #
-    yt_dlp_url = update.message.reply_to_message.text
+    yt_dlp_url = update.message.reply_to_message.text.replace('\n', '-')
     LOGGER.info(yt_dlp_url)
     #
 
@@ -127,7 +127,6 @@ async def yt_dlp_call_back(bot, update):
     )
     if not os.path.isdir(tmp_directory_for_each_user):
         os.makedirs(tmp_directory_for_each_user)
-    download_directory = tmp_directory_for_each_user
     download_directory = os.path.join(tmp_directory_for_each_user, custom_file_name)
     command_to_exec = []
     if tg_send_type == "audio":
@@ -286,7 +285,7 @@ async def yt_dlp_call_back(bot, update):
                     thumb=thumbnail,
                     caption=custom_file_name,
                     reply_to_message_id=update.message.reply_to_message.message_id,
-                    # reply_markup=reply_markup,
+                    reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -298,7 +297,10 @@ async def yt_dlp_call_back(bot, update):
                     await document.copy(LOG_CHANNEL)
             else:
                 width, height, duration = await VideoMetaData(download_directory)
-                thumb_image_path = await VideoThumb(bot, update, duration, download_directory)
+                if os.path.exists(thumb_image_path):
+                    thumb_image_path = thumb_image_path
+                else:
+                    thumb_image_path = await VideoThumb(bot, update, duration, download_directory)
                 await update.message.reply_to_message.reply_chat_action("upload_video")
                 video = await bot.send_video(
                     chat_id=update.message.chat.id,
@@ -308,7 +310,7 @@ async def yt_dlp_call_back(bot, update):
                     width=width,
                     height=height,
                     supports_streaming=True,
-                    # reply_markup=reply_markup,
+                    reply_markup=reply_markup,
                     thumb=thumb_image_path,
                     reply_to_message_id=update.message.reply_to_message.message_id,
                     progress=progress_for_pyrogram,
@@ -334,7 +336,7 @@ async def yt_dlp_call_back(bot, update):
                     duration=duration,
                     thumb=thumbnail,
                     reply_to_message_id=update.message.reply_to_message.message_id,
-                    # reply_markup=reply_markup,
+                    reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -355,7 +357,7 @@ async def yt_dlp_call_back(bot, update):
                     length=width,
                     thumb=thumbnail,
                     reply_to_message_id=update.message.reply_to_message.message_id,
-                    # reply_markup=reply_markup,
+                    reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -398,6 +400,7 @@ async def yt_dlp_call_back(bot, update):
                     media=media_album_p
                 )
             #
+
             try:
                 shutil.rmtree(tmp_directory_for_each_user)
             except:
