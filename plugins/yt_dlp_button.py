@@ -16,7 +16,7 @@ from config import DOWNLOAD_LOCATION, LOG_CHANNEL, HTTP_PROXY, TG_MAX_FILE_SIZE,
 from database.database import db
 from translation import Translation
 
-from pyrogram.types import InputMediaPhoto
+from pyrogram.types import InputMediaPhoto, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import MessageNotModified
 from functions.display_progress import progress_for_pyrogram, humanbytes
 from functions.help_Nekmo_ffmpeg import generate_screen_shots, VideoThumb, VideoMetaData, VMMetaData, DocumentThumb, \
@@ -177,7 +177,6 @@ async def yt_dlp_call_back(bot, update):
                 yt_dlp_url, "-o", download_directory
             ]
 
-
     #
     command_to_exec.append("--no-warnings")
     # command_to_exec.append("--quiet")
@@ -273,7 +272,11 @@ async def yt_dlp_call_back(bot, update):
                 pass
 
             start_time = time.time()
-
+            btn = [[
+                InlineKeyboardButton(f"Upload By {update.from_user.id}", url=f"tg://user?id={update.from_user.id}")
+            ]]
+            reply_markup = InlineKeyboardMarkup(btn)
+            
             if (await db.get_upload_as_doc(update.from_user.id)) is True:
                 thumbnail = await DocumentThumb(bot, update)
                 await update.message.reply_to_message.reply_chat_action("upload_document")
@@ -283,6 +286,7 @@ async def yt_dlp_call_back(bot, update):
                     thumb=thumbnail,
                     caption=custom_file_name,
                     reply_to_message_id=update.message.reply_to_message.message_id,
+                    # reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -304,9 +308,11 @@ async def yt_dlp_call_back(bot, update):
                     width=width,
                     height=height,
                     supports_streaming=True,
+                    # reply_markup=reply_markup,
                     thumb=thumb_image_path,
                     reply_to_message_id=update.message.reply_to_message.message_id,
                     progress=progress_for_pyrogram,
+                    parse_mode='html',
                     progress_args=(
                         Translation.UPLOAD_START,
                         update.message,
@@ -328,6 +334,7 @@ async def yt_dlp_call_back(bot, update):
                     duration=duration,
                     thumb=thumbnail,
                     reply_to_message_id=update.message.reply_to_message.message_id,
+                    # reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -348,6 +355,7 @@ async def yt_dlp_call_back(bot, update):
                     length=width,
                     thumb=thumbnail,
                     reply_to_message_id=update.message.reply_to_message.message_id,
+                    # reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -364,9 +372,8 @@ async def yt_dlp_call_back(bot, update):
             if (await db.get_generate_ss(update.from_user.id)) is True:
                 if images is not None:
                     i = 0
-                    caption = ""
-                    if is_w_f:
-                        caption = ""
+                    uname = (await bot.get_me())['username']
+                    caption = f'@{str(uname)}'
                     for image in images:
                         if os.path.exists(str(image)):
                             if i == 0:
