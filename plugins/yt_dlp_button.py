@@ -16,12 +16,13 @@ from config import DOWNLOAD_LOCATION, LOG_CHANNEL, HTTP_PROXY, TG_MAX_FILE_SIZE,
 from database.database import db
 from translation import Translation
 
-
 from pyrogram.types import InputMediaPhoto
 from pyrogram.errors import MessageNotModified
 from functions.display_progress import progress_for_pyrogram, humanbytes
-from functions.help_Nekmo_ffmpeg import generate_screen_shots, VideoThumb, VideoMetaData, VMMetaData, DocumentThumb, AudioMetaData
+from functions.help_Nekmo_ffmpeg import generate_screen_shots, VideoThumb, VideoMetaData, VMMetaData, DocumentThumb, \
+    AudioMetaData
 from functions.utils import remove_urls, remove_emoji
+
 
 async def yt_dlp_call_back(bot, update):
     cb_data = update.data
@@ -66,7 +67,7 @@ async def yt_dlp_call_back(bot, update):
     #
 
     name = str(response_json.get("title")[:100]) + \
-                       "." + yt_dlp_ext
+           "." + yt_dlp_ext
 
     custom_file_name = remove_emoji(remove_urls(name))
     LOGGER.info(custom_file_name)
@@ -146,27 +147,37 @@ async def yt_dlp_call_back(bot, update):
             "-x 16 -s 16 -k 1M"
         ]
     else:
-        for for_mat in response_json["formats"]:
-            format_id = for_mat.get("format_id")
-            if format_id == yt_dlp_format:
-                acodec = for_mat.get("acodec")
-                if acodec == "none":
-                    yt_dlp_format += "+bestaudio"
-                break
+        try:
+            for for_mat in response_json["formats"]:
+                format_id = for_mat.get("format_id")
+                if format_id == yt_dlp_format:
+                    acodec = for_mat.get("acodec")
+                    if acodec == "none":
+                        yt_dlp_format += "+bestaudio"
+                    break
 
-        command_to_exec = [
-            "yt-dlp",
-            "-c",
-            "--max-filesize", str(TG_MAX_FILE_SIZE),
-            "--embed-subs",
-            "-f", yt_dlp_format,
-            "--hls-prefer-ffmpeg", yt_dlp_url,
-            "-o", download_directory,
-            "--external-downloader",
-            "aria2c",
-            "--external-downloader-args",
-            "-x 16 -s 16 -k 1M"
-        ]
+            command_to_exec = [
+                "yt-dlp",
+                "-c",
+                "--max-filesize", str(TG_MAX_FILE_SIZE),
+                "--embed-subs",
+                "-f", yt_dlp_format,
+                "--hls-prefer-ffmpeg", yt_dlp_url,
+                "-o", download_directory,
+                "--external-downloader",
+                "aria2c",
+                "--external-downloader-args",
+                "-x 16 -s 16 -k 1M"
+            ]
+        except KeyError:
+            command_to_exec = [
+                "yt-dlp",
+                "-c",
+                "--max-filesize", str(TG_MAX_FILE_SIZE),
+                yt_dlp_url, "-o", download_directory
+            ]
+
+
     #
     command_to_exec.append("--no-warnings")
     # command_to_exec.append("--quiet")
@@ -280,7 +291,7 @@ async def yt_dlp_call_back(bot, update):
                     )
                 )
                 if LOG_CHANNEL:
-                   await document.copy(LOG_CHANNEL)
+                    await document.copy(LOG_CHANNEL)
             else:
                 width, height, duration = await VideoMetaData(download_directory)
                 thumb_image_path = await VideoThumb(bot, update, duration, download_directory)
@@ -303,7 +314,7 @@ async def yt_dlp_call_back(bot, update):
                     )
                 )
                 if LOG_CHANNEL:
-                   await video.copy(LOG_CHANNEL)
+                    await video.copy(LOG_CHANNEL)
 
             if tg_send_type == "audio":
                 duration = await AudioMetaData(download_directory)
@@ -325,7 +336,7 @@ async def yt_dlp_call_back(bot, update):
                     )
                 )
                 if LOG_CHANNEL:
-                   await audio.copy(LOG_CHANNEL)
+                    await audio.copy(LOG_CHANNEL)
             elif tg_send_type == "vm":
                 width, duration = await VMMetaData(download_directory)
                 thumbnail = await VideoThumb(bot, update, duration, download_directory)
@@ -345,7 +356,7 @@ async def yt_dlp_call_back(bot, update):
                     )
                 )
                 if LOG_CHANNEL:
-                   await video_note.copy(LOG_CHANNEL)
+                    await video_note.copy(LOG_CHANNEL)
 
             end_two = datetime.now()
             time_taken_for_upload = (end_two - end_one).seconds
