@@ -135,7 +135,7 @@ async def ddl_call_back(bot, update):
                     thumb=thumbnail,
                     caption=custom_file_name,
                     reply_to_message_id=update.message.reply_to_message.message_id,
-                    reply_markup=reply_markup,
+                    # reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -159,7 +159,7 @@ async def ddl_call_back(bot, update):
                     supports_streaming=True,
                     thumb=thumb_image_path,
                     reply_to_message_id=update.message.reply_to_message.message_id,
-                    reply_markup=reply_markup,
+                    # reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -182,7 +182,7 @@ async def ddl_call_back(bot, update):
                     duration=duration,
                     thumb=thumbnail,
                     reply_to_message_id=update.message.reply_to_message.message_id,
-                    reply_markup=reply_markup,
+                    # reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
