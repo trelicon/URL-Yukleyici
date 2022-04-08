@@ -1,9 +1,9 @@
 import logging
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
+    level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
-logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 import asyncio
 import json
@@ -45,7 +45,7 @@ async def yt_dlp_call_back(bot, update):
                        "/" + str(update.from_user.id) + f'{random}' + ".jpg"
     save_ytdl_json_path = DOWNLOAD_LOCATION + \
                           "/" + str(update.from_user.id) + f'{random}' + ".json"
-    print(save_ytdl_json_path)
+    LOGGER.info(save_ytdl_json_path)
 
     try:
         with open(save_ytdl_json_path, "r", encoding="utf8") as f:
@@ -276,7 +276,7 @@ async def yt_dlp_call_back(bot, update):
                 InlineKeyboardButton(f"Upload By {update.from_user.id}", url=f"tg://user?id={update.from_user.id}")
             ]]
             reply_markup = InlineKeyboardMarkup(btn)
-            
+
             if (await db.get_upload_as_doc(update.from_user.id)) is True:
                 thumbnail = await DocumentThumb(bot, update)
                 await update.message.reply_to_message.reply_chat_action("upload_document")
@@ -286,7 +286,7 @@ async def yt_dlp_call_back(bot, update):
                     thumb=thumbnail,
                     caption=custom_file_name,
                     reply_to_message_id=update.message.reply_to_message.message_id,
-                    # reply_markup=reply_markup,
+                    reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -308,7 +308,7 @@ async def yt_dlp_call_back(bot, update):
                     width=width,
                     height=height,
                     supports_streaming=True,
-                    # reply_markup=reply_markup,
+                    reply_markup=reply_markup,
                     thumb=thumb_image_path,
                     reply_to_message_id=update.message.reply_to_message.message_id,
                     progress=progress_for_pyrogram,
@@ -334,7 +334,7 @@ async def yt_dlp_call_back(bot, update):
                     duration=duration,
                     thumb=thumbnail,
                     reply_to_message_id=update.message.reply_to_message.message_id,
-                    # reply_markup=reply_markup,
+                    reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
@@ -355,7 +355,7 @@ async def yt_dlp_call_back(bot, update):
                     length=width,
                     thumb=thumbnail,
                     reply_to_message_id=update.message.reply_to_message.message_id,
-                    # reply_markup=reply_markup,
+                    reply_markup=reply_markup,
                     progress=progress_for_pyrogram,
                     progress_args=(
                         Translation.UPLOAD_START,
