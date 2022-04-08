@@ -256,7 +256,7 @@ async def echo(bot, update):
                 inline_keyboard.append(
                     [
                         InlineKeyboardButton(
-                            "🎞️ SVideo", callback_data=(cb_string_video).encode("UTF-8")
+                            "🗂 Document", callback_data=(cb_string_video).encode("UTF-8")
                         )
                     ]
                 )
