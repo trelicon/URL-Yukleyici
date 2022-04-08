@@ -107,7 +107,7 @@ async def yt_dlp_call_back(bot, update):
         if "fulltitle" in response_json:
            title = response_json["fulltitle"][0:100]
            if "description" in response_json:
-               description = response_json["description"][0:821]
+               description = response_json["description"][0:821] + "..."
                caption = title + "\n\n" + description
            else:
                caption = title
