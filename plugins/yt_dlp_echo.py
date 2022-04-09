@@ -146,7 +146,7 @@ async def echo(bot, update):
     if e_response and "nonnumeric port" not in e_response:
         # LOGGER.warn("Status : FAIL", exc.returncode, exc.output)
         error_message = e_response.replace(
-            "please report this issue on https://github.com/yt-dlp/yt-dlp , filling out the appropriate issue template. Confirm you are on the latest version using yt-dlp -U",
+            "please report this issue on https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using yt-dlp -U",
             "")
         if "This video is only available for registered users." in error_message:
             error_message += Translation.SET_CUSTOM_USERNAME_PASSWORD
