@@ -195,7 +195,7 @@ async def echo(bot, update):
                     dipslay_str_uon = (
                             "🎬 "
                             + format_string
-                            + " - "
+                            + " "
                             + approx_file_size
                             + " "
                             + format_ext
@@ -231,8 +231,7 @@ async def echo(bot, update):
                         else:
                             ikeyboard = [
                                 InlineKeyboardButton(
-                                    format_string + 
-                                    " (Video) ",
+                                    dipslay_str_uon,
                                     callback_data=(cb_string_video).encode("UTF-8"),
                                 )
                             ]
