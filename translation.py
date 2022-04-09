@@ -1,6 +1,5 @@
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-
 class Translation(object):
     START_TEXT = """Merhaba {},\n
 Ben bir URL Yükleyicisiyim!
