@@ -2,6 +2,7 @@ import re
 import string
 import random
 
+URL_REGEX = "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 
 def random_char(y):
     return ''.join(random.choice(string.ascii_letters) for x in range(y))
