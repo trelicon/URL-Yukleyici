@@ -5,7 +5,7 @@ class Translation(object):
     START_TEXT = """Merhaba {},\n
 Ben bir URL Yükleyicisiyim!
 Bu Botu kullanarak HTTP/HTTPS bağlantılarını yükleyebilirsiniz!"""
-    FORMAT_SELECTION = "Formatı seçin <a href='{}'>dosya boyutu yaklaşık olabilir.</a>\n\nKapak fotoğrafı ayarlamak istiyorsanız, aşağıdaki düğmelerden herhangi birine dokunmadan önce veya hızlı bir şekilde fotoğraf gönderin.\n\nKapak fotoğrafını silmek için /delthumb kullanabilirsiniz."
+    FORMAT_SELECTION = """<b>İstenen formatı seçin:</b> 👇\n<u>belirtilen</u> <i>dosya boyutu yaklaşık olabilir.</i>"""
     SET_CUSTOM_USERNAME_PASSWORD = """\n\nBu videoyu indirmek istiyorsanız, aşağıdaki biçimi sağlayın:
     URL | dosyaadı | kullanıcıadı | parola"""
     DOWNLOAD_START = "<b>Dosya Adı:</b> {}\n\nİndiriliyor.. 📥"
