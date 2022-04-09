@@ -17,7 +17,7 @@ from database.database import db
 from translation import Translation
 
 from pyrogram.types import InputMediaPhoto, InlineKeyboardMarkup, InlineKeyboardButton
-from pyrogram.errors import MessageNotModified
+from pyrogram.errors import FloodWait, MessageNotModified
 from functions.display_progress import progress_for_pyrogram, humanbytes
 from functions.help_Nekmo_ffmpeg import generate_screen_shots, VideoThumb, VideoMetaData, VMMetaData, DocumentThumb, \
     AudioMetaData
@@ -114,9 +114,12 @@ async def yt_dlp_call_back(bot, update):
     else:
         if "fulltitle" in response_json:
             title = response_json["fulltitle"][0:100]
-            if "description" in response_json:
-                description = response_json["description"][0:821]
-                caption = title + "\n\n" + description
+            if (await db.get_caption(update.from_user.id)) is True:
+                if "description" in response_json:
+                    description = response_json["description"][0:821]
+                    caption = title + "\n\n" + description
+                else:
+                    caption = title
             else:
                 caption = title
         for entity in update.message.reply_to_message.entities:
@@ -258,6 +261,7 @@ async def yt_dlp_call_back(bot, update):
                 if tg_send_type == 'video' and 'webm' in current_file_name:
                     download_directory = current_file_name.rsplit('.', 1)[0] + '.mkv'
                     os.rename(current_file_name, download_directory)
+                    current_file_name = download_directory
             except:
                 pass
 
@@ -268,19 +272,15 @@ async def yt_dlp_call_back(bot, update):
                     message_id=update.message.message_id
                 )
             else:
-                try:
-                    is_w_f = False
-                    images = await generate_screen_shots(
-                        current_file_name,
-                        tmp_directory_for_each_user,
-                        is_w_f,
-                        DEF_WATER_MARK_FILE,
-                        300,
-                        9
-                    )
-                except Exception as e:
-                    await update.message.edit_caption(caption='Sayfaya erişemedim.\nVideo bulunamadı.')
-                    return False, None
+                is_w_f = False
+                images = await generate_screen_shots(
+                    current_file_name,
+                    tmp_directory_for_each_user,
+                    is_w_f,
+                    DEF_WATER_MARK_FILE,
+                    300,
+                    9
+                )
                 try:
                     await bot.edit_message_text(
                         text=Translation.UPLOAD_START,
@@ -307,114 +307,117 @@ async def yt_dlp_call_back(bot, update):
                     ]]
 
                 reply_markup = InlineKeyboardMarkup(btn)
-                if tg_send_type == "audio":
-                    duration = await AudioMetaData(current_file_name)
-                    thumbnail = await DocumentThumb(bot, update)
-                    await update.message.reply_to_message.reply_chat_action("upload_audio")
-                    audio = await bot.send_audio(
-                        chat_id=update.message.chat.id,
-                        audio=current_file_name,
-                        caption=caption,
-                        parse_mode="HTML",
-                        duration=duration,
-                        thumb=thumbnail,
-                        reply_to_message_id=update.message.reply_to_message.message_id,
-                        reply_markup=reply_markup,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            Translation.UPLOAD_START,
-                            update.message,
-                            start_time
+                try:
+                    if tg_send_type == "audio":
+                        duration = await AudioMetaData(current_file_name)
+                        thumbnail = await DocumentThumb(bot, update)
+                        await update.message.reply_to_message.reply_chat_action("upload_audio")
+                        audio = await bot.send_audio(
+                            chat_id=update.message.chat.id,
+                            audio=current_file_name,
+                            caption=caption,
+                            parse_mode="HTML",
+                            duration=duration,
+                            thumb=thumbnail,
+                            reply_to_message_id=update.message.reply_to_message.message_id,
+                            reply_markup=reply_markup,
+                            progress=progress_for_pyrogram,
+                            progress_args=(
+                                Translation.UPLOAD_START,
+                                update.message,
+                                start_time
+                            )
                         )
-                    )
-                    if LOG_CHANNEL:
-                        await audio.copy(LOG_CHANNEL)
-                elif tg_send_type == "vm":
-                    width, duration = await VMMetaData(current_file_name)
-                    thumbnail = await VideoThumb(bot, update, duration, current_file_name)
-                    await update.message.reply_to_message.reply_chat_action("upload_video_note")
-                    video_note = await bot.send_video_note(
-                        chat_id=update.message.chat.id,
-                        video_note=current_file_name,
-                        duration=duration,
-                        length=width,
-                        thumb=thumbnail,
-                        reply_to_message_id=update.message.reply_to_message.message_id,
-                        reply_markup=reply_markup,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            Translation.UPLOAD_START,
-                            update.message,
-                            start_time
+                        if LOG_CHANNEL:
+                            await audio.copy(LOG_CHANNEL)
+                    elif tg_send_type == "vm":
+                        width, duration = await VMMetaData(current_file_name)
+                        thumbnail = await VideoThumb(bot, update, duration, current_file_name)
+                        await update.message.reply_to_message.reply_chat_action("upload_video_note")
+                        video_note = await bot.send_video_note(
+                            chat_id=update.message.chat.id,
+                            video_note=current_file_name,
+                            duration=duration,
+                            length=width,
+                            thumb=thumbnail,
+                            reply_to_message_id=update.message.reply_to_message.message_id,
+                            reply_markup=reply_markup,
+                            progress=progress_for_pyrogram,
+                            progress_args=(
+                                Translation.UPLOAD_START,
+                                update.message,
+                                start_time
+                            )
                         )
-                    )
-                    if LOG_CHANNEL:
-                        await video_note.copy(LOG_CHANNEL)
-                elif tg_send_type == "file":
-                    document = await bot.send_document(
-                        chat_id=update.message.chat.id,
-                        document=current_file_name,
-                        caption=caption,
-                        parse_mode="HTML",
-                        reply_to_message_id=update.message.reply_to_message.message_id,
-                        reply_markup=reply_markup,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            Translation.UPLOAD_START,
-                            update.message,
-                            start_time
+                        if LOG_CHANNEL:
+                            await video_note.copy(LOG_CHANNEL)
+                    elif tg_send_type == "file":
+                        document = await bot.send_document(
+                            chat_id=update.message.chat.id,
+                            document=current_file_name,
+                            caption=caption,
+                            parse_mode="HTML",
+                            reply_to_message_id=update.message.reply_to_message.message_id,
+                            reply_markup=reply_markup,
+                            progress=progress_for_pyrogram,
+                            progress_args=(
+                                Translation.UPLOAD_START,
+                                update.message,
+                                start_time
+                            )
                         )
-                    )
-                    if LOG_CHANNEL:
-                        await document.copy(LOG_CHANNEL)
-                elif (await db.get_upload_as_doc(update.from_user.id)) is True:
-                    thumbnail = await DocumentThumb(bot, update)
-                    await update.message.reply_to_message.reply_chat_action("upload_document")
-                    document = await bot.send_document(
-                        chat_id=update.message.chat.id,
-                        document=current_file_name,
-                        thumb=thumbnail,
-                        caption=caption,
-                        parse_mode="HTML",
-                        reply_to_message_id=update.message.reply_to_message.message_id,
-                        reply_markup=reply_markup,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            Translation.UPLOAD_START,
-                            update.message,
-                            start_time
+                        if LOG_CHANNEL:
+                            await document.copy(LOG_CHANNEL)
+                    elif (await db.get_upload_as_doc(update.from_user.id)) is True:
+                        thumbnail = await DocumentThumb(bot, update)
+                        await update.message.reply_to_message.reply_chat_action("upload_document")
+                        document = await bot.send_document(
+                            chat_id=update.message.chat.id,
+                            document=current_file_name,
+                            thumb=thumbnail,
+                            caption=caption,
+                            parse_mode="HTML",
+                            reply_to_message_id=update.message.reply_to_message.message_id,
+                            reply_markup=reply_markup,
+                            progress=progress_for_pyrogram,
+                            progress_args=(
+                                Translation.UPLOAD_START,
+                                update.message,
+                                start_time
+                            )
                         )
-                    )
-                    if LOG_CHANNEL:
-                        await document.copy(LOG_CHANNEL)
-                else:
-                    width, height, duration = await VideoMetaData(current_file_name)
-                    if os.path.exists(thumb_image_path):
-                        thumb_image_path = thumb_image_path
+                        if LOG_CHANNEL:
+                            await document.copy(LOG_CHANNEL)
                     else:
-                        thumb_image_path = await VideoThumb(bot, update, duration, current_file_name)
-                    await update.message.reply_to_message.reply_chat_action("upload_video")
-                    video = await bot.send_video(
-                        chat_id=update.message.chat.id,
-                        video=current_file_name,
-                        caption=caption,
-                        parse_mode="HTML",
-                        duration=duration,
-                        width=width,
-                        height=height,
-                        supports_streaming=True,
-                        reply_markup=reply_markup,
-                        thumb=thumb_image_path,
-                        reply_to_message_id=update.message.reply_to_message.message_id,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            Translation.UPLOAD_START,
-                            update.message,
-                            start_time
+                        width, height, duration = await VideoMetaData(current_file_name)
+                        thumb_image_path = await VideoThumb(bot, update, duration, current_file_name, random)
+                        await update.message.reply_to_message.reply_chat_action("upload_video")
+                        video = await bot.send_video(
+                            chat_id=update.message.chat.id,
+                            video=current_file_name,
+                            caption=caption,
+                            parse_mode="HTML",
+                            duration=duration,
+                            width=width,
+                            height=height,
+                            supports_streaming=True,
+                            reply_markup=reply_markup,
+                            thumb=thumb_image_path,
+                            reply_to_message_id=update.message.reply_to_message.message_id,
+                            progress=progress_for_pyrogram,
+                            progress_args=(
+                                Translation.UPLOAD_START,
+                                update.message,
+                                start_time
+                            )
                         )
-                    )
-                    if LOG_CHANNEL:
-                        await video.copy(LOG_CHANNEL)
+                        if LOG_CHANNEL:
+                            await video.copy(LOG_CHANNEL)
+                except FloodWait as e:
+                    print(f"Sleep of {e.x} required by FloodWait ...")
+                    time.sleep(e.x)
+                except MessageNotModified:
+                    pass
 
                 end_two = datetime.now()
                 time_taken_for_upload = (end_two - end_one).seconds
