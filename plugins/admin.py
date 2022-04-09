@@ -15,12 +15,12 @@ from config import OWNER_ID
 from pyrogram import Client
 from database.database import db
 from functions.display_progress import humanbytes
-from plugins.broadcast import broadcast_handler
+from database.broadcast import broadcast_handler
 
 @Client.on_message(filters.command("status") & filters.user(OWNER_ID) & ~filters.edited)
 async def status_handler(_, m: Message):
     heroku_api = "https://api.heroku.com"
-    total, used, free = shutil.disk_usage(".")
+    total, used, free = shutil.disk_usage("../database")
     total = humanbytes(total)
     used = humanbytes(used)
     free = humanbytes(free)
@@ -28,11 +28,11 @@ async def status_handler(_, m: Message):
     ram_usage = psutil.virtual_memory().percent
     disk_usage = psutil.disk_usage('/').percent
     total_users = await db.total_users_count()
-    text = f"**Toplam Disk Alanı:** `{total}` \n"
-    text += f"**Kullanılan Alan:** `{used}({disk_usage}`%) \n"
-    text += f"**Boş Alan:** `{free}` \n"
-    text += f"**CPU Kullanımı:** `{cpu_usage}%` \n"
-    text += f"**RAM Kullanımı:** `{ram_usage}%`\n\n"
+    text = f"**Toplam Disk Alanı:** {total} \n"
+    text += f"**Kullanılan Alan:** {used}({disk_usage}%) \n"
+    text += f"**Boş Alan:** {free} \n"
+    text += f"**CPU Kullanımı:** {cpu_usage}% \n"
+    text += f"**RAM Kullanımı:** {ram_usage}%\n\n"
     text += f"**DB'deki Toplam Kullanıcılar:** `{total_users}`"
     if HEROKU_API_KEY is not None and HEROKU_APP_NAME is not None:
         Heroku = heroku3.from_key(HEROKU_API_KEY)
@@ -43,8 +43,6 @@ async def status_handler(_, m: Message):
             parse_mode="Markdown",
             quote=True
         )
-        return
-    
     useragent = (
         "Mozilla/5.0 (Linux; Android 10; SM-G975F) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -86,12 +84,12 @@ async def status_handler(_, m: Message):
             AppMinutes = math.floor(AppQuotaUsed % 60)
 
             await m.reply_text(
-                f"**ℹ️ Dyno Kullanımı**\n\n`🟢 {app.name}`:\n"
-                f"• `{AppHours}` **Saat ve** `{AppMinutes}` **Dakika\n💯: {AppPercent}%**\n\n"
-                "**⚠️ Kalan Dyno**\n"
-                f"• `{hours}` **Saat ve** `{minutes}` **Dakika\n💯: {quota_percent}%**\n\n"
-                "**❌ Tahmini Kalan Süre**\n"
-                f"• `{day}` **Gün**" + '\n\n' + text,
+                f"<b>ℹ️ Dyno Kullanımı</b>\n\n<code>🟢 {app.name}</code>:\n"
+                f"• <code>{AppHours}</code> <b>Saat ve</b> <code>{AppMinutes}</code> <b>Dakika\n💯: {AppPercent}%</b>\n\n"
+                "<b>⚠️ Dyno Kalan</b>\n"
+                f"• <code>{hours}</code> <b>Saat ve</b> <code>{minutes}</code> <b>Dakika\n💯: {quota_percent}%</b>\n\n"
+                "<b>❌ Tahmini Dolan Süre</b>\n"
+                f"• <code>{day}</code> <b>Days</b>" + '\n\n' + text,
                 parse_mode="Markdown",
                 quote=True
             )
@@ -99,4 +97,4 @@ async def status_handler(_, m: Message):
 
 @Client.on_message(filters.command("broadcast") & filters.user(OWNER_ID) & filters.reply & ~filters.edited)
 async def broadcast_in(_, m: Message):
-    await broadcast_handler(m)
+    await broadcast_handler(_, m)
