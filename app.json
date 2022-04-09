@@ -10,10 +10,6 @@
   "website": "https://github.com/Turkce-Botlar-Sohbet",
   "repository": "https://github.com/Turkce-Botlar-Sohbet/URL-Yukleyici",
   "env": {
-    "WEBHOOK": {
-      "description": "Bunu ANYTHING ayarlamak, env modundayken web kancalarını etkinleştirir",
-      "value": "ANYTHING"
-    },
     "BOT_TOKEN": {
       "description": "https://t.me/BotFather adresinden bir bot oluşturarak edinin.",
       "value": ""
@@ -39,7 +35,7 @@
       "value": ""
     },
     "AUTH_CHANNEL": {
-      "description": "Zorla abone yapmak için kanalınızın kullanıcı adını yazın (@ olmadan).",
+      "description": "Zorla abone yapmak için kanalınızın ID numarası.",
       "value": "",
       "required": false
     },
@@ -48,8 +44,8 @@
       "value": "",
       "required": false
     },
-    "SCREENSHOTS": {
-      "description": "Yüklemeden sonra video için ekran görüntüleri oluşturun.",
+    "PROMO": {
+      "description": "Yüklemeden sonra bot reklamı. Değer True/False olmalıdır.",
       "value": "True",
       "required": false
     },
@@ -63,7 +59,7 @@
       "value": "128"
     },
     "HEROKU_APP_NAME": {
-      "description": "Heroku adı",
+      "description": "Heroku uygulama adı",
       "value": "",
       "required": false
     },
@@ -73,7 +69,7 @@
       "required": false
     },
     "HTTP_PROXY": {
-      "description": "Kısıtlı Alanlarda youtube-dl'ye erişmek için proxy. https://github.com/rg3/youtube-dl/issues/1091#issuecomment-230163061 adresinden kendi proxy'nizi alın",
+      "description": "Kısıtlı alanlarda yt-dlp'ye erişmek için proxy ekleyin.",
       "value": "",
       "required": false
     }
