@@ -32,14 +32,18 @@ async def DocumentThumb(bot, update):
     return thumbnail
 
 
-async def VideoThumb(bot, update, duration, download_directory):
-    thumb_image_path = DOWNLOAD_LOCATION + "/" + str(update.from_user.id) + ".jpg"
+async def VideoThumb(bot, update, duration, download_directory, random):
+    thumb_image_path = DOWNLOAD_LOCATION + \
+                       "/" + str(update.from_user.id) + f'{random}' + ".jpg"
     db_thumbnail = await db.get_thumbnail(update.from_user.id)
     if db_thumbnail is not None:
         thumbnail = await bot.download_media(message=db_thumbnail, file_name=thumb_image_path)
     else:
-        thumbnail = await take_screen_shot(download_directory, os.path.dirname(download_directory),
-                                           random.randint(0, duration - 1))
+        if os.path.exists(thumb_image_path):
+            thumbnail = thumb_image_path
+        else:
+            thumbnail = await take_screen_shot(download_directory, os.path.dirname(download_directory),
+                                               random.randint(0, duration - 1))
 
     return thumbnail
 
