@@ -16,7 +16,6 @@ from pyrogram import Client
 from database.database import db
 from functions.display_progress import humanbytes
 from database.broadcast import broadcast_handler
-from pyrogram.errors import MessageTooLong
 
 @Client.on_message(filters.command("status") & filters.user(OWNER_ID) & ~filters.edited)
 async def status_handler(_, m: Message):
@@ -106,7 +105,7 @@ async def restart(_, m: Message):
     restart_msg = await m.reply_text(text="`İşleniyor...`")
     await restart_msg.edit("`Yeniden başlatılıyor! Lütfen bekle...`")
     try:
-        if HEROKU_API_KEY is not None:
+        if HEROKU_API_KEY is not None and HEROKU_APP_NAME is not None:
             heroku_conn = heroku3.from_key(HEROKU_API_KEY)
             server = heroku_conn.app(HEROKU_APP_NAME)
             server.restart()
