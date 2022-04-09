@@ -17,8 +17,10 @@ from functions.display_progress import humanbytes
 from functions.help_uploadbot import DownLoadFile
 from functions.forcesub import handle_force_subscribe
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from functions.utils import URL_REGEX
 
-@Client.on_message(filters.private & filters.regex(pattern=".*http.*"))
+
+@Client.on_message(filters.private & filters.regex(pattern=URL_REGEX))
 async def echo(bot, update):
     if AUTH_CHANNEL:
         try:
@@ -51,9 +53,8 @@ async def echo(bot, update):
     yt_dlp_username = None
     yt_dlp_password = None
     file_name = None
-
     random = str(time.time())
-    LOGGER.info(url)
+
     if "|" in url:
         url_parts = url.split("|")
         if len(url_parts) == 2:
@@ -201,30 +202,39 @@ async def echo(bot, update):
                             + " "
                     )
                     cb_string_video = "{}|{}|{}|{}".format("video", format_id, format_ext, random)
-                    if format_string is not None and not "audio only" in format_string:
-                        ikeyboard = [
-                            InlineKeyboardButton(
-                                dipslay_str_uon,
-                                callback_data=(cb_string_video).encode("UTF-8")
-                            )
-                        ]
-                        """if duration is not None:
-                            cb_string_video_message = "{}|{}|{}".format(
-                                "vm", format_id, format_ext)
-                            ikeyboard.append(
+                    ikeyboard = []
+                    if "drive.google.com" in url:
+                            ikeyboard = [
                                 InlineKeyboardButton(
-                                    "VM",
-                                    callback_data=(
-                                        cb_string_video_message).encode("UTF-8")
+                                    dipslay_str_uon,
+                                    callback_data=(cb_string_video).encode("UTF-8")
                                 )
-                            )"""
+                            ]
                     else:
-                        ikeyboard = [
-                            InlineKeyboardButton(
-                                dipslay_str_uon,
-                                callback_data=(cb_string_video).encode("UTF-8"),
-                            )
-                        ]
+                        if format_string is not None and not "audio only" in format_string:
+                            ikeyboard = [
+                                InlineKeyboardButton(
+                                    dipslay_str_uon,
+                                    callback_data=(cb_string_video).encode("UTF-8")
+                                )
+                            ]
+                            """if duration is not None:
+                                cb_string_video_message = "{}|{}|{}".format(
+                                    "vm", format_id, format_ext)
+                                ikeyboard.append(
+                                    InlineKeyboardButton(
+                                        "VM",
+                                        callback_data=(
+                                            cb_string_video_message).encode("UTF-8")
+                                    )
+                                )"""
+                        else:
+                            ikeyboard = [
+                                InlineKeyboardButton(
+                                    dipslay_str_uon,
+                                    callback_data=(cb_string_video).encode("UTF-8"),
+                                )
+                            ]
                     inline_keyboard.append(ikeyboard)
                 if duration is not None:
                     cb_string_64 = "{}|{}|{}|{}".format("audio", "64k", "mp3", random)
@@ -253,7 +263,7 @@ async def echo(bot, update):
             else:
                 format_id = current_r_json["format_id"]
                 format_ext = current_r_json["ext"]
-                cb_string_video = "{}={}={}={}".format("video", format_id, format_ext, random)
+                cb_string_video = "{}|{}|{}|{}".format("file", format_id, format_ext, random)
                 inline_keyboard.append(
                     [
                         InlineKeyboardButton(
@@ -262,7 +272,7 @@ async def echo(bot, update):
                     ]
                 )
             break
-        inline_keyboard.append([InlineKeyboardButton("♨️ İptal et", callback_data='close')])
+        inline_keyboard.append([InlineKeyboardButton("♨ İptal et", callback_data='close')])
         reply_markup = InlineKeyboardMarkup(inline_keyboard)
     else:
         # fallback for nonnumeric port a.k.a seedbox.io
