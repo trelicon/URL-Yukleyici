@@ -37,11 +37,11 @@ async def Settings(m: "types.Message"):
                                     callback_data="setCaption")],
         [types.InlineKeyboardButton(f"📸 Ekran Görüntüsü Al {'✅' if generate_ss else '❎'}",
                                     callback_data="triggerGenSS")],
-        [types.InlineKeyboardButton(f"🌃 Thumbaili {'Değiştir' if thumbnail else 'Ayarla'}",
+        [types.InlineKeyboardButton(f"🌃 Thumbnail {'Değiştir' if thumbnail else 'Ayarla'}",
                                     callback_data="setThumbnail")]
     ]
     if thumbnail:
-        buttons_markup.append([types.InlineKeyboardButton("🌆 Thumbnaili Göster",
+        buttons_markup.append([types.InlineKeyboardButton("🌆 Thumbnail Göster",
                                                           callback_data="showThumbnail")])
     if not is_command == "bot_command":
         buttons_markup.append([types.InlineKeyboardButton(f"🔙 Geri",
