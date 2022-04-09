@@ -330,7 +330,7 @@ async def yt_dlp_call_back(bot, update):
                         width, duration = await VMMetaData(current_file_name)
                         thumbnail = await VideoThumb(bot, update, duration, current_file_name)
                         await update.message.reply_to_message.reply_chat_action("upload_video_note")
-                        video_note = await bot.send_video_note(
+                        copy = await bot.send_video_note(
                             chat_id=update.message.chat.id,
                             video_note=current_file_name,
                             duration=duration,
