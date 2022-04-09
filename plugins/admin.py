@@ -30,7 +30,7 @@ async def status_handler(_, m: Message):
         disk_usage = psutil.disk_usage('/').percent
         total_users = await db.total_users_count()
         text = f"**Toplam Disk Alanı:** `{total}` \n"
-        text += f"**Kullanılan Alan:** `{used}({disk_usage}`%) \n"
+        text += f"**Kullanılan Alan:** `{used}({disk_usage}%)` \n"
         text += f"**Boş Alan:** `{free}` \n"
         text += f"**CPU Kullanımı:** `{cpu_usage}%` \n"
         text += f"**RAM Kullanımı:** `{ram_usage}%`\n\n"
