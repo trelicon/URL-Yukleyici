@@ -141,7 +141,7 @@ async def echo(bot, update):
     # Wait for the subprocess to finish
     stdout, stderr = await process.communicate()
     e_response = stderr.decode().strip()
-    # LOGGER.info(e_response)
+    LOGGER.info(e_response)
     t_response = stdout.decode().strip()
     # LOGGER.info(t_response)
     if e_response and "nonnumeric port" not in e_response:
@@ -312,7 +312,7 @@ async def echo(bot, update):
         thumb_image_path = None
 
     await send_message.edit_text(
-        text=Translation.FORMAT_SELECTION.format(thumbnail) + "\n" + Translation.SET_CUSTOM_USERNAME_PASSWORD,
+        text=Translation.FORMAT_SELECTION,
         reply_markup=reply_markup,
         parse_mode="html",
         disable_web_page_preview=True
