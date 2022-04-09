@@ -1,8 +1,8 @@
 import logging
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
-    level=logging.INFO)
+                    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
+                    level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 import asyncio
@@ -22,7 +22,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from functions.display_progress import progress_for_pyrogram, humanbytes, TimeFormatter
 from functions.help_Nekmo_ffmpeg import VideoThumb, VideoMetaData, VMMetaData, DocumentThumb, AudioMetaData
 
-    
+
 async def ddl_call_back(bot, update):
     LOGGER.info(update)
     cb_data = update.data
@@ -38,6 +38,14 @@ async def ddl_call_back(bot, update):
         if len(url_parts) == 2:
             yt_dlp_url = url_parts[0]
             custom_file_name = url_parts[1]
+            if len(custom_file_name) > 64:
+                await update.edit_message_text(
+                    Translation.IFLONG_FILE_NAME.format(
+                        alimit="64",
+                        num=len(custom_file_name)
+                    )
+                )
+                return
         else:
             for entity in update.message.reply_to_message.entities:
                 if entity.type == "text_link":
@@ -47,7 +55,7 @@ async def ddl_call_back(bot, update):
                     l = entity.length
                     yt_dlp_url = yt_dlp_url[o:o + l]
         if yt_dlp_url is not None:
-            yt_dlp_url =yt_dlp_url.strip()
+            yt_dlp_url = yt_dlp_url.strip()
         if custom_file_name is not None:
             custom_file_name = custom_file_name.strip()
         # https://stackoverflow.com/a/761825/4723940
@@ -61,9 +69,9 @@ async def ddl_call_back(bot, update):
                 o = entity.offset
                 l = entity.length
                 yt_dlp_url = yt_dlp_url[o:o + l]
-    #user = await bot.get_me()
-    #mention = user["mention"]
-    #description = Translation.CUSTOM_CAPTION_UL_FILE.format(mention)
+    # user = await bot.get_me()
+    # mention = user["mention"]
+    # description = Translation.CUSTOM_CAPTION_UL_FILE.format(mention)
     start = datetime.now()
     await bot.edit_message_text(
         text=Translation.DOWNLOAD_START.format(custom_file_name),
@@ -144,7 +152,7 @@ async def ddl_call_back(bot, update):
                     )
                 )
                 if LOG_CHANNEL:
-                   await document.forward(LOG_CHANNEL)
+                    await document.forward(LOG_CHANNEL)
             else:
                 width, height, duration = await VideoMetaData(download_directory)
                 thumb_image_path = await VideoThumb(bot, update, duration, download_directory)
@@ -168,7 +176,7 @@ async def ddl_call_back(bot, update):
                     )
                 )
                 if LOG_CHANNEL:
-                   await video.forward(LOG_CHANNEL)
+                    await video.forward(LOG_CHANNEL)
 
             if tg_send_type == "audio":
                 duration = await AudioMetaData(download_directory)
@@ -191,7 +199,7 @@ async def ddl_call_back(bot, update):
                     )
                 )
                 if LOG_CHANNEL:
-                   await audio.forward(LOG_CHANNEL)
+                    await audio.forward(LOG_CHANNEL)
             elif tg_send_type == "vm":
                 width, duration = await VMMetaData(download_directory)
                 thumbnail = await VideoThumb(bot, update, duration, download_directory)
@@ -211,7 +219,7 @@ async def ddl_call_back(bot, update):
                     )
                 )
                 if LOG_CHANNEL:
-                   await video_note.forward(LOG_CHANNEL)
+                    await video_note.forward(LOG_CHANNEL)
 
             end_two = datetime.now()
             try:
@@ -222,7 +230,8 @@ async def ddl_call_back(bot, update):
             time_taken_for_download = (end_one - start).seconds
             time_taken_for_upload = (end_two - end_one).seconds
             await bot.edit_message_text(
-                text=Translation.AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS.format(time_taken_for_download, time_taken_for_upload),
+                text=Translation.AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS.format(time_taken_for_download,
+                                                                            time_taken_for_upload),
                 chat_id=update.message.chat.id,
                 message_id=update.message.message_id,
                 disable_web_page_preview=True
@@ -273,11 +282,11 @@ URL: {}
 Boyut: {}
 İndirilen: {}
 Süre: {}""".format(
-    url,
-    humanbytes(total_length),
-    humanbytes(downloaded),
-    TimeFormatter(estimated_total_time)
-)
+                            url,
+                            humanbytes(total_length),
+                            humanbytes(downloaded),
+                            TimeFormatter(estimated_total_time)
+                        )
                         if current_message != display_message:
                             await bot.edit_message_text(
                                 chat_id,
