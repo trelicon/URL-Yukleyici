@@ -18,6 +18,7 @@ class Database:
             upload_as_doc=False,
             thumbnail=None,
             notif=True,
+            caption=False,
             generate_ss=False,
             generate_sample_video=False
         )
@@ -55,33 +56,12 @@ class Database:
         user = await self.col.find_one({'id': int(id)})
         return user.get('thumbnail', None)
 
-    async def set_generate_ss(self, id, generate_ss):
-        await self.col.update_one({'id': id}, {'$set': {'generate_ss': generate_ss}})
+    async def set_caption(self, id, thumbnail):
+        await self.col.update_one({'id': id}, {'$set': {'caption': thumbnail}})
 
-    async def get_generate_ss(self, id):
+    async def get_caption(self, id):
         user = await self.col.find_one({'id': int(id)})
-        return user.get('generate_ss', False)
-
-    async def set_generate_sample_video(self, id, generate_sample_video):
-        await self.col.update_one({'id': id}, {'$set': {'generate_sample_video': generate_sample_video}})
-
-    async def get_generate_sample_video(self, id):
-        user = await self.col.find_one({'id': int(id)})
-        return user.get('generate_sample_video', False)
-
-    async def set_upload_as_doc(self, id, upload_as_doc):
-        await self.col.update_one({'id': id}, {'$set': {'upload_as_doc': upload_as_doc}})
-
-    async def get_upload_as_doc(self, id):
-        user = await self.col.find_one({'id': int(id)})
-        return user.get('upload_as_doc', False)
-
-    async def set_thumbnail(self, id, thumbnail):
-        await self.col.update_one({'id': id}, {'$set': {'thumbnail': thumbnail}})
-
-    async def get_thumbnail(self, id):
-        user = await self.col.find_one({'id': int(id)})
-        return user.get('thumbnail', None)
+        return user.get('caption', None)
 
     async def set_generate_ss(self, id, generate_ss):
         await self.col.update_one({'id': id}, {'$set': {'generate_ss': generate_ss}})
