@@ -98,3 +98,18 @@ async def status_handler(_, m: Message):
 @Client.on_message(filters.command("broadcast") & filters.user(OWNER_ID) & filters.reply & ~filters.edited)
 async def broadcast_in(_, m: Message):
     await broadcast_handler(_, m)
+    
+    
+@Client.on_message(filters.command("reset") & filters.user(OWNER_ID))
+async def restart(_, m: Message):
+    restart_msg = await m.reply_text(text="`İşleniyor...`")
+    await restart_msg.edit("`Yeniden başlatılıyor! Lütfen bekle...`")
+    try:
+        if HEROKU_API_KEY is not None:
+            heroku_conn = heroku3.from_key(HEROKU_API_KEY)
+            server = heroku_conn.app(HEROKU_APP_NAME)
+            server.restart()
+        else:
+            await restart_msg.edit("`Heroku değişkenlerini ekleyin.`")
+    except Exception as e:
+        await restart_msg.edit(f"**Error:** `{e}`")
