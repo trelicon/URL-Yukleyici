@@ -284,7 +284,7 @@ async def echo(bot, update):
                 callback_data=(cb_string_video).encode("UTF-8")
             )
         ])
-        inline_keyboard.append([InlineKeyboardButton("♨️ İptal et", callback_data='close')])
+        inline_keyboard.append([InlineKeyboardButton("♨ İptal et", callback_data='close')])
         reply_markup = InlineKeyboardMarkup(inline_keyboard)
         # LOGGER.info(reply_markup)
     thumbnail = DEF_THUMB_NAIL_VID_S
