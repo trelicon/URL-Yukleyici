@@ -231,7 +231,8 @@ async def echo(bot, update):
                         else:
                             ikeyboard = [
                                 InlineKeyboardButton(
-                                    dipslay_str_uon,
+                                    format_string + 
+                                    " (Video) ",
                                     callback_data=(cb_string_video).encode("UTF-8"),
                                 )
                             ]
