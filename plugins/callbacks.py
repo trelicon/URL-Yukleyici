@@ -64,6 +64,14 @@ async def button(bot, update):
         else:
             await db.set_generate_sample_video(update.from_user.id, True)
         await Settings(update.message)
+    elif update.data == "setCaption":
+        await update.answer()
+        caption = await db.get_caption(update.from_user.id)
+        if caption:
+            await db.set_caption(update.from_user.id, False)
+        else:
+            await db.set_caption(update.from_user.id, True)
+        await Settings(update.message)
     elif update.data == "triggerUploadMode":
         await update.answer()
         upload_as_doc = await db.get_upload_as_doc(update.from_user.id)
