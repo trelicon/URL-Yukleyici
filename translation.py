@@ -22,7 +22,7 @@ URL | dosyaismi.mp4"""
     SAVED_CUSTOM_THUMB_NAIL = "**✔️ Kapak fotoğrafı kaydedildi.**"
     DEL_ETED_CUSTOM_THUMB_NAIL = "**🗑️ Kapak fotoğrafı başarıyla temizlendi.**"
     CUSTOM_CAPTION_UL_FILE = "{}"
-    NO_VOID_FORMAT_FOUND = "HATA...\n<b>YouTubeDL</b>: {}"
+    NO_VOID_FORMAT_FOUND = "<b>YT-DLP</b>:\n{}"
     SETTINGS = "**Ayarlarlarınızı buradan yapabilirsiniz.**"
     HELP_TEXT = """Nasıl kullanılır? Aşağıdaki adımları izleyin!
     
