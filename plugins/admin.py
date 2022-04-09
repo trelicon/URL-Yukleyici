@@ -20,7 +20,7 @@ from database.broadcast import broadcast_handler
 @Client.on_message(filters.command("status") & filters.user(OWNER_ID) & ~filters.edited)
 async def status_handler(_, m: Message):
     heroku_api = "https://api.heroku.com"
-    total, used, free = shutil.disk_usage("../database")
+    total, used, free = shutil.disk_usage("./database")
     total = humanbytes(total)
     used = humanbytes(used)
     free = humanbytes(free)
