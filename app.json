@@ -46,7 +46,7 @@
     },
     "PROMO": {
       "description": "Yüklemeden sonra bot reklamı. Değer True/False olmalıdır.",
-      "value": "True",
+      "value": "",
       "required": false
     },
     "DEF_THUMB_NAIL_VID_S": {
