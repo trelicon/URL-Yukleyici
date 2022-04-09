@@ -301,12 +301,10 @@ async def yt_dlp_call_back(bot, update):
                     btn = [[
                         InlineKeyboardButton(f"Uploaded By {user.first_name}", url=f"tg://user?id={user.id}")
                     ]]
+                    reply_markup = InlineKeyboardMarkup(btn)
                 elif PROMO is False:
-                    btn = [[
-                        InlineKeyboardButton(f"Uploaded By {user_id}", url=f"tg://user?id={user_id}")
-                    ]]
+                    reply_markup = False
 
-                reply_markup = InlineKeyboardMarkup(btn)
                 try:
                     if tg_send_type == "audio":
                         duration = await AudioMetaData(current_file_name)
