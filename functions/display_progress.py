@@ -33,15 +33,7 @@ async def progress_for_pyrogram(current, total, ud_type, message, start):
                     ud_type,
                     tmp
                 ),
-                parse_mode='markdown',
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton('♨ İptal et', callback_data='close')
-                        ]
-                    ]
-                )
-            )
+                parse_mode='markdown'
         except:
             pass
 
