@@ -4,10 +4,7 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-
-
 from pyrogram import Client
-
 
 logging.getLogger("pyrogram").setLevel(logging.WARNING)
 from pyrogram import filters
@@ -18,7 +15,8 @@ from database.add import add_user_to_database
 from plugins.settings.settings import *
 from translation import Translation
 
-@Client.on_message(filters.private & filters.photo & ~filters.edited)
+
+@Client.on_message(filters.incoming & filters.photo & ~filters.edited)
 async def photo_handler(bot: Client, event: Message):
     if not event.from_user:
         return await event.reply_text("Seni tanımıyorum ahbap.")
@@ -32,7 +30,7 @@ async def photo_handler(bot: Client, event: Message):
     await editable.edit(Translation.SAVED_CUSTOM_THUMB_NAIL)
 
 
-@Client.on_message(filters.private & filters.command(["delthumb", "deletethumb"]) & ~filters.edited)
+@Client.on_message(filters.incoming & filters.command(["delthumb", "deletethumb"]) & ~filters.edited)
 async def delete_thumb_handler(bot: Client, event: Message):
     if not event.from_user:
         return await event.reply_text("Seni tanımıyorum ahbap.")
@@ -51,7 +49,7 @@ async def delete_thumb_handler(bot: Client, event: Message):
     )
 
 
-@Client.on_message(filters.private & filters.command("showthumb"))
+@Client.on_message(filters.incoming & filters.command("showthumb") & ~filters.edited)
 async def viewthumbnail(bot, update):
     if not update.from_user:
         return await update.reply_text("Seni tanımıyorum ahbap.")
@@ -72,4 +70,3 @@ async def viewthumbnail(bot, update):
             reply_to_message_id=update.message_id)
     else:
         await update.reply_text(text=f"Thumbnail Bulunamadı.")
-
