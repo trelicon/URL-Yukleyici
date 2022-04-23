@@ -5,12 +5,6 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 async def handle_force_subscribe(bot, message):
     try:
-        date = message.date + 120
-        invite_link = await bot.create_chat_invite_link(AUTH_CHANNEL, expire_date=date, member_limit=1)
-    except FloodWait as e:
-        await asyncio.sleep(e.x)
-        return 400
-    try:
         user = await bot.get_chat_member(AUTH_CHANNEL, message.from_user.id)
         if user.status == "banned":
             await bot.delete_messages(
@@ -20,6 +14,8 @@ async def handle_force_subscribe(bot, message):
             )
             return 400
     except UserNotParticipant:
+        date = message.date + 120
+        invite_link = await bot.create_chat_invite_link(AUTH_CHANNEL, expire_date=date, member_limit=1)
         await bot.send_message(
             chat_id=message.from_user.id,
             text=START_TXT,
@@ -33,6 +29,9 @@ async def handle_force_subscribe(bot, message):
             parse_mode="markdown",
             reply_to_message_id=message.message_id,
         )
+        return 400
+    except FloodWait as e:
+        await asyncio.sleep(e.x)
         return 400
     except Exception:
         await bot.send_message(
