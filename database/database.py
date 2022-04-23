@@ -49,6 +49,13 @@ class Database:
         user = await self.col.find_one({'id': int(id)})
         return user.get('upload_as_doc', False)
 
+    async def set_aria2(self, id, aria2):
+        await self.col.update_one({'id': id}, {'$set': {'aria2': aria2}})
+
+    async def get_aria2(self, id):
+        user = await self.col.find_one({'id': int(id)})
+        return user.get('aria2', False)
+
     async def set_thumbnail(self, id, thumbnail):
         await self.col.update_one({'id': id}, {'$set': {'thumbnail': thumbnail}})
 
