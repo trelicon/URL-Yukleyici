@@ -31,8 +31,8 @@ async def yt_dlp_call_back(bot, update):
     dtime = str(time.time())
 
     current_user_id = update.message.reply_to_message.from_user.id
-    current_touched_user_id = update.from_user.id
-    if current_user_id != current_touched_user_id:
+    user_id = update.from_user.id
+    if current_user_id != user_id:
         await bot.answer_callback_query(
             callback_query_id=update.id,
             text="Seni tanımıyorum ahbap.",
@@ -42,9 +42,9 @@ async def yt_dlp_call_back(bot, update):
         return False, None
 
     thumb_image_path = DOWNLOAD_LOCATION + \
-                       "/" + str(update.from_user.id) + f'{random}' + ".jpg"
+                       "/" + str(user_id) + f'{random}' + ".jpg"
     save_ytdl_json_path = DOWNLOAD_LOCATION + \
-                          "/" + str(update.from_user.id) + f'{random}' + ".json"
+                          "/" + str(user_id) + f'{random}' + ".json"
     LOGGER.info(save_ytdl_json_path)
 
     try:
@@ -114,7 +114,7 @@ async def yt_dlp_call_back(bot, update):
     else:
         if "fulltitle" in response_json:
             title = response_json["fulltitle"][0:100]
-            if (await db.get_caption(update.from_user.id)) is True:
+            if (await db.get_caption(user_id)) is True:
                 if "description" in response_json:
                     description = response_json["description"][0:821]
                     caption = title + "\n\n" + description
@@ -139,7 +139,7 @@ async def yt_dlp_call_back(bot, update):
 
     tmp_directory_for_each_user = os.path.join(
         DOWNLOAD_LOCATION,
-        str(update.from_user.id),
+        str(user_id),
         dtime
     )
     if not os.path.isdir(tmp_directory_for_each_user):
@@ -156,11 +156,7 @@ async def yt_dlp_call_back(bot, update):
             "--audio-format", yt_dlp_ext,
             "--audio-quality", yt_dlp_format,
             yt_dlp_url,
-            "-o", download_directory,
-            "--external-downloader",
-            "aria2c",
-            "--external-downloader-args",
-            "-x 16 -s 16 -k 1M"
+            "-o", download_directory
         ]
     else:
         try:
@@ -179,11 +175,7 @@ async def yt_dlp_call_back(bot, update):
                 "--embed-subs",
                 "-f", yt_dlp_format,
                 "--hls-prefer-ffmpeg", yt_dlp_url,
-                "-o", download_directory,
-                "--external-downloader",
-                "aria2c",
-                "--external-downloader-args",
-                "-x 16 -s 16 -k 1M"
+                "-o", download_directory
             ]
         except KeyError:
             command_to_exec = [
@@ -192,6 +184,12 @@ async def yt_dlp_call_back(bot, update):
                 "--max-filesize", str(TG_MAX_FILE_SIZE),
                 yt_dlp_url, "-o", download_directory
             ]
+
+    if await db.get_aria2(user_id) is True:
+        command_to_exec.append("--external-downloader")
+        command_to_exec.append("aria2c")
+        command_to_exec.append("--external-downloader-args")
+        command_to_exec.append("-x 16 -s 16 -k 1M")
 
     #
     command_to_exec.append("--no-warnings")
@@ -242,26 +240,44 @@ async def yt_dlp_call_back(bot, update):
         end_one = datetime.now()
         time_taken_for_download = (end_one - start).seconds
 
-        user_id = update.from_user.id
         #
         file_size = TG_MAX_FILE_SIZE + 1
         #
         LOGGER.info(tmp_directory_for_each_user)
-        download_directory_dirname = os.path.dirname(download_directory)
-        download_directory_contents = os.listdir(download_directory_dirname)
-        for download_directory_c in download_directory_contents:
-            current_file_name = os.path.join(
-                download_directory_dirname,
-                download_directory_c
-            )
+        user = await bot.get_me()
+        BotMention = user["mention"]
+        UserMention = update.from_user.mention
 
-            file_size = os.stat(current_file_name).st_size
+        if PROMO:
+            caption += Translation.UPLOADER.format(UserMention, BotMention)
+            btn = [[
+                InlineKeyboardButton(f"Uploaded By {user.first_name}", url=f"tg://user?id={user.id}")
+            ]]
+            reply_markup = InlineKeyboardMarkup(btn)
+        else:
+            reply_markup = False
+
+        if os.path.isdir(tmp_directory_for_each_user):
+            directory_contents = os.listdir(tmp_directory_for_each_user)
+            directory_contents.sort()
+        else:
+            try:
+                shutil.rmtree(tmp_directory_for_each_user)  # delete folder for user
+                os.remove(thumb_image_path)
+            except:
+                pass
+
+        for single_file in directory_contents:
+            print(single_file)
+            path = os.path.join(tmp_directory_for_each_user, single_file)
+
+            file_size = os.stat(path).st_size
 
             try:
-                if tg_send_type == 'video' and 'webm' in current_file_name:
-                    download_directory = current_file_name.rsplit('.', 1)[0] + '.mkv'
-                    os.rename(current_file_name, download_directory)
-                    current_file_name = download_directory
+                if tg_send_type == 'video' and 'webm' in path:
+                    download_directory = path.rsplit('.', 1)[0] + '.mkv'
+                    os.rename(path, download_directory)
+                    path = download_directory
             except:
                 pass
 
@@ -274,7 +290,7 @@ async def yt_dlp_call_back(bot, update):
             else:
                 is_w_f = False
                 images = await generate_screen_shots(
-                    current_file_name,
+                    path,
                     tmp_directory_for_each_user,
                     is_w_f,
                     DEF_WATER_MARK_FILE,
@@ -292,27 +308,14 @@ async def yt_dlp_call_back(bot, update):
 
                 start_time = time.time()
 
-                user = await bot.get_me()
-                BotMention = user["mention"]
-                UserMention = update.from_user.mention
-
-                if PROMO:
-                    caption += Translation.UPLOADER.format(UserMention, BotMention)
-                    btn = [[
-                        InlineKeyboardButton(f"Uploaded By {user.first_name}", url=f"tg://user?id={user.id}")
-                    ]]
-                    reply_markup = InlineKeyboardMarkup(btn)
-                else:
-                    reply_markup = False
-
                 try:
                     if tg_send_type == "audio":
-                        duration = await AudioMetaData(current_file_name)
+                        duration = await AudioMetaData(path)
                         thumbnail = await DocumentThumb(bot, update)
                         await update.message.reply_to_message.reply_chat_action("upload_audio")
                         copy = await bot.send_audio(
                             chat_id=update.message.chat.id,
-                            audio=current_file_name,
+                            audio=path,
                             caption=caption,
                             parse_mode="HTML",
                             duration=duration,
@@ -327,12 +330,12 @@ async def yt_dlp_call_back(bot, update):
                             )
                         )
                     elif tg_send_type == "vm":
-                        width, duration = await VMMetaData(current_file_name)
-                        thumbnail = await VideoThumb(bot, update, duration, current_file_name)
+                        width, duration = await VMMetaData(path)
+                        thumbnail = await VideoThumb(bot, update, duration, path)
                         await update.message.reply_to_message.reply_chat_action("upload_video_note")
                         copy = await bot.send_video_note(
                             chat_id=update.message.chat.id,
-                            video_note=current_file_name,
+                            video_note=path,
                             duration=duration,
                             length=width,
                             thumb=thumbnail,
@@ -348,7 +351,7 @@ async def yt_dlp_call_back(bot, update):
                     elif tg_send_type == "file":
                         copy = await bot.send_document(
                             chat_id=update.message.chat.id,
-                            document=current_file_name,
+                            document=path,
                             caption=caption,
                             parse_mode="HTML",
                             reply_to_message_id=update.message.reply_to_message.message_id,
@@ -360,12 +363,12 @@ async def yt_dlp_call_back(bot, update):
                                 start_time
                             )
                         )
-                    elif (await db.get_upload_as_doc(update.from_user.id)) is True:
+                    elif (await db.get_upload_as_doc(user_id)) is True:
                         thumbnail = await DocumentThumb(bot, update)
                         await update.message.reply_to_message.reply_chat_action("upload_document")
                         copy = await bot.send_document(
                             chat_id=update.message.chat.id,
-                            document=current_file_name,
+                            document=path,
                             thumb=thumbnail,
                             caption=caption,
                             parse_mode="HTML",
@@ -379,12 +382,12 @@ async def yt_dlp_call_back(bot, update):
                             )
                         )
                     else:
-                        width, height, duration = await VideoMetaData(current_file_name)
-                        thumb_image_path = await VideoThumb(bot, update, duration, current_file_name, random)
+                        width, height, duration = await VideoMetaData(path)
+                        thumb_image_path = await VideoThumb(bot, update, duration, path, random)
                         await update.message.reply_to_message.reply_chat_action("upload_video")
                         copy = await bot.send_video(
                             chat_id=update.message.chat.id,
-                            video=current_file_name,
+                            video=path,
                             caption=caption,
                             parse_mode="HTML",
                             duration=duration,
@@ -412,7 +415,7 @@ async def yt_dlp_call_back(bot, update):
                 end_two = datetime.now()
                 time_taken_for_upload = (end_two - end_one).seconds
                 media_album_p = []
-                if (await db.get_generate_ss(update.from_user.id)) is True:
+                if (await db.get_generate_ss(user_id)) is True:
                     if images is not None:
                         i = 0
                         uname = (await bot.get_me())['username']
@@ -442,14 +445,6 @@ async def yt_dlp_call_back(bot, update):
                     )
             #
             try:
-                shutil.rmtree(tmp_directory_for_each_user)
-            except:
-                pass
-            try:
-                os.remove(current_file_name)
-            except:
-                pass
-            try:
                 await bot.edit_message_text(
                     text=Translation.AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS.format(time_taken_for_download,
                                                                                 time_taken_for_upload),
@@ -462,5 +457,13 @@ async def yt_dlp_call_back(bot, update):
 
     try:
         os.remove(thumb_image_path)
+    except:
+        pass
+    try:
+        shutil.rmtree(tmp_directory_for_each_user)
+    except:
+        pass
+    try:
+        os.remove(path)
     except:
         pass
