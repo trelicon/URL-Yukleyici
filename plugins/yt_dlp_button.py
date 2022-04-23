@@ -70,7 +70,7 @@ async def yt_dlp_call_back(bot, update):
            "." + yt_dlp_ext
 
     custom_file_name = remove_emoji(remove_urls(name))
-    LOGGER.info(custom_file_name)
+    LOGGER.info(name)
     #
     yt_dlp_username = None
     yt_dlp_password = None
@@ -80,7 +80,7 @@ async def yt_dlp_call_back(bot, update):
             yt_dlp_url = url_parts[0]
             custom_file_name = url_parts[1]
             caption = custom_file_name
-            if len(custom_file_name) > 64:
+            if len(custom_file_name) > 60:
                 await update.edit_message_text(
                     Translation.IFLONG_FILE_NAME.format(
                         alimit="64",
