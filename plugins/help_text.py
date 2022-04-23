@@ -7,7 +7,7 @@ from plugins.settings.settings import Settings
 from functions.forcesub import handle_force_subscribe
 
 
-@Client.on_message(filters.incoming & filters.command(["start", "help"]))
+@Client.on_message(filters.incoming & filters.command(["start", "help"]) & ~filters.edited)
 async def start(bot: Client, event: Message):
     if not event.from_user:
         return await event.reply_text("Seni tanımıyorum ahbap.")
@@ -23,7 +23,7 @@ async def start(bot: Client, event: Message):
         reply_markup=Translation.START_BUTTONS
     )
 
-@Client.on_message(filters.incoming & filters.command(["ayarlar", "settings"]))
+@Client.on_message(filters.incoming & filters.command(["ayarlar", "settings"]) & ~filters.edited)
 async def delete_thumb_handler(bot: Client, event: Message):
     if not event.from_user:
         return await event.reply_text("Seni tanımıyorum ahbap.")
