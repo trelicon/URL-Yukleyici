@@ -1,5 +1,7 @@
 import re
+import os
 from os import environ
+from dotenv import load_dotenv
 
 import logging
 
@@ -13,6 +15,9 @@ logging.basicConfig(
 LOGGER = logging
 
 id_pattern = re.compile(r'^.\d+$')
+
+if os.path.exists('config.env'):
+    load_dotenv('config.env')
 
 # get a token from @BotFather
 BOT_TOKEN = environ.get("BOT_TOKEN", "")
@@ -47,6 +52,7 @@ CHUNK_SIZE = int(environ.get("CHUNK_SIZE", 128))
 DEF_THUMB_NAIL_VID_S = environ.get("DEF_THUMB_NAIL_VID_S", "")
 
 # proxy for accessing youtube-dl in GeoRestricted Areas
+# Get your own proxy from https://github.com/rg3/youtube-dl/issues/1091#issuecomment-230163061
 HTTP_PROXY = environ.get("HTTP_PROXY", "")
 
 # maximum message length in Telegram
