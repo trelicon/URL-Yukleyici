@@ -20,9 +20,9 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from functions.utils import URL_REGEX
 
 
-@Client.on_message(filters.private & filters.regex(pattern=URL_REGEX))
+@Client.on_message(filters.incoming & filters.regex(pattern=URL_REGEX))
 async def echo(bot, update):
-    if AUTH_CHANNEL:
+    if LOG_CHANNEL:
         try:
             log_message = await update.copy(LOG_CHANNEL)
             log_info = "Gönderen Bilgileri:\n"
@@ -36,20 +36,23 @@ async def echo(bot, update):
                 quote=True
             )
         except Exception as error:
-            print(error)
+            LOGGER.warn(error)
     if not update.from_user:
         return await update.reply_text("Seni tanımıyorum ahbap.")
     await add_user_to_database(bot, update)
-    await bot.send_chat_action(
-        chat_id=update.chat.id,
-        action="typing"
-    )
     if AUTH_CHANNEL:
         fsub = await handle_force_subscribe(bot, update)
         if fsub == 400:
             return
+
+    message_id = update.message_id
+    chat_id = update.chat.id
+    await update.reply_chat_action(action="typing")
+    send_message = await update.reply(text=f"İşleniyor...⏳", disable_web_page_preview=True, reply_to_message_id=message_id)
+
     LOGGER.info(update.from_user)
     url = update.text
+
     yt_dlp_username = None
     yt_dlp_password = None
     file_name = None
@@ -126,12 +129,6 @@ async def echo(bot, update):
         command_to_exec.append("--password")
         command_to_exec.append(yt_dlp_password)
     LOGGER.info(command_to_exec)
-    send_message = await bot.send_message(
-        chat_id=update.chat.id,
-        text=f"İşleniyor...⏳",
-        disable_web_page_preview=True,
-        reply_to_message_id=update.message_id
-    )
     process = await asyncio.create_subprocess_exec(
         *command_to_exec,
         # stdout must a pipe to be accessible as process.stdout
@@ -200,7 +197,7 @@ async def echo(bot, update):
                             + " "
                             + format_ext
                             + " "
-                    )
+                    ).replace("unknown", "")
                     cb_string_video = "{}|{}|{}|{}".format("video", format_id, format_ext, random)
                     ikeyboard = []
                     if "drive.google.com" in url:
@@ -301,8 +298,8 @@ async def echo(bot, update):
         CHUNK_SIZE,
         None,  # bot,
         Translation.DOWNLOAD_START,
-        update.message_id,
-        update.chat.id
+        message_id,
+        chat_id
     )
 
     if os.path.exists(thumb_image_path):
