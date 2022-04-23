@@ -17,7 +17,7 @@ Bu Botu kullanarak HTTP/HTTPS bağlantılarını yükleyebilirsiniz!"""
             InlineKeyboardButton('❔ Yardım Menüsü', callback_data='help')
         ]]
     )
-    RCHD_TG_API_LIMIT = "{} saniye içinde İndirildi.\nAlgılanan Dosya Boyutu: {}\nÜzgünüm. Ancak, TELEGRAM API sınırlamaları nedeniyle 2GB'DEN büyük dosyaları yükleyemiyorum."
+    RCHD_TG_API_LIMIT = "{} saniye içinde İndirildi.\nAlgılanan Dosya Boyutu: {}\nÜzgünüm. Ancak, Telegram API sınırlamaları nedeniyle 2000MB'den büyük dosyaları yükleyemiyorum."
     AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS = "{} saniye içinde İndirildi.\n{} saniye içinde yüklendi."
     SAVED_CUSTOM_THUMB_NAIL = "**✔️ Kapak fotoğrafı kaydedildi.**"
     DEL_ETED_CUSTOM_THUMB_NAIL = "**🗑️ Kapak fotoğrafı başarıyla temizlendi.**"
@@ -38,3 +38,13 @@ Bot cevap vermediyse @thebans ile iletişime geçin"""
     UPLOADER = "\n\n© {} tarafından {} kullanılarak yüklendi."
     THUMBNAIL_TEXT = "Thumbnail ayarlamak için bana herhangi bir fotoğraf gönderin."
     IFLONG_FILE_NAME = """Telegram tarafından izin verilen dosya adı sınırı {alimit} karakterdir.\n\nBana verilen dosya adında {num} karakter var.\nLütfen dosya adınızı kısaltın ve tekrar deneyin!"""
+
+    DOWNLOAD_PROGRESS = "`█`"
+    UPLOAD_PROGRESS = "`░`"
+
+    PROGRESS = """`
+{0}% / {1}
+P: {2}
+Hız: {3}/s
+ETA: {4}
+    `"""
