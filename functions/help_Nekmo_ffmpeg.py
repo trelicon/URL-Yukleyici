@@ -1,8 +1,9 @@
 import logging
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
+                    level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
 
 
 import os
@@ -31,18 +32,21 @@ async def DocumentThumb(bot, update):
 
     return thumbnail
 
+  
+async def VideoThumb(bot, update, duration, path, vrandom):
 
-async def VideoThumb(bot, update, duration, download_directory, random):
+    default_thumb_image_path = DOWNLOAD_LOCATION + \
+                       "/" + str(update.from_user.id) + f'{vrandom}' + ".jpg"
     thumb_image_path = DOWNLOAD_LOCATION + \
-                       "/" + str(update.from_user.id) + f'{random}' + ".jpg"
+                       "/" + str(update.from_user.id) + ".jpg"
     db_thumbnail = await db.get_thumbnail(update.from_user.id)
     if db_thumbnail is not None:
         thumbnail = await bot.download_media(message=db_thumbnail, file_name=thumb_image_path)
     else:
-        if os.path.exists(thumb_image_path):
-            thumbnail = thumb_image_path
+        if os.path.exists(default_thumb_image_path):
+            thumbnail = default_thumb_image_path
         else:
-            thumbnail = await take_screen_shot(download_directory, os.path.dirname(download_directory),
+            thumbnail = await take_screen_shot(path, os.path.dirname(path),
                                                random.randint(0, duration - 1))
 
     return thumbnail
