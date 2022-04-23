@@ -25,12 +25,15 @@ async def Settings(m: "types.Message"):
     generate_ss = user_data.get("generate_ss", False)
     get_notif = user_data.get("notif", False)
     get_caption = user_data.get("caption", False)
+    get_aria2 = user_data.get("aria2", False)
 
     buttons_markup = [
         [types.InlineKeyboardButton(f"{'🔔' if get_notif else '🔕'} Bildirimler",
                                     callback_data="notifon")],
         [types.InlineKeyboardButton(f"{'🎥 Video' if upload_as_doc else '🗃️ Dosya'} Olarak Yükle",
                                     callback_data="triggerUploadMode")],
+        [types.InlineKeyboardButton(f"Library: {'aria2 📚' if get_aria2 else 'aiohttp 📚'}",
+                                    callback_data="aria2")],
         # [types.InlineKeyboardButton(f"🎞 Kısa Video Oluştur {'✅' if generate_sample_video else '❎'}",
         # callback_data="triggerGenSample")],
         [types.InlineKeyboardButton(f"📜 Açıklama {'✅' if get_caption else '❎'}",
