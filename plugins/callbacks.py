@@ -1,16 +1,15 @@
+from database.database import db
+from pyrogram import Client, types
+from translation import Translation
+from plugins.dl_button import ddl_call_back
+from plugins.settings.settings import Settings
+from plugins.yt_dlp_button import yt_dlp_call_back
+
 import logging
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-from pyrogram import Client, types
-from database.database import db
-from plugins.yt_dlp_button import yt_dlp_call_back
-from plugins.dl_button import ddl_call_back
-from translation import Translation
-from pyrogram import Client, filters
-from plugins.settings.settings import Settings
 
 
 @Client.on_callback_query()
@@ -42,10 +41,10 @@ async def button(bot, update):
         else:
             await update.answer()
             await bot.send_photo(message.chat.id, thumbnail, "Ayarlı Thumbnail",
-                               reply_markup=types.InlineKeyboardMarkup([[
-                                   types.InlineKeyboardButton("Sil",
-                                                              callback_data="deleteThumbnail")
-                               ]]))
+                                 reply_markup=types.InlineKeyboardMarkup([[
+                                     types.InlineKeyboardButton("Sil",
+                                                                callback_data="deleteThumbnail")
+                                 ]]))
     elif cb_data == "deleteThumbnail":
         await db.set_thumbnail(user_id, None)
         await update.answer("Başarıyla silindi.", show_alert=True)
