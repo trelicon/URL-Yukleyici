@@ -4,7 +4,7 @@ from pyrogram.errors import FloodWait, UserNotParticipant
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 async def handle_force_subscribe(bot, message):
-    message_id = message.message_id
+    message_id = message.id
     try:
         user = await bot.get_chat_member(AUTH_CHANNEL, message.from_user.id)
         if user.status == "banned":
