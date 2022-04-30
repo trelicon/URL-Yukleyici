@@ -4,12 +4,13 @@ from pyrogram.errors import FloodWait, UserNotParticipant
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 async def handle_force_subscribe(bot, message):
+    message_id = message.message_id
     try:
         user = await bot.get_chat_member(AUTH_CHANNEL, message.from_user.id)
         if user.status == "banned":
             await bot.delete_messages(
                 chat_id=message.chat.id,
-                message_ids=message.message_id,
+                message_id=message_id,
                 revoke=True
             )
             return 400
@@ -26,8 +27,7 @@ async def handle_force_subscribe(bot, message):
                     ]
                 ]
             ),
-            parse_mode="markdown",
-            reply_to_message_id=message.message_id,
+            reply_to_message_id=message_id,
         )
         return 400
     except FloodWait as e:
@@ -37,8 +37,7 @@ async def handle_force_subscribe(bot, message):
         await bot.send_message(
             chat_id=message.from_user.id,
             text="Bir şeyler ters gitti.",
-            parse_mode="markdown",
             disable_web_page_preview=True,
-            reply_to_message_id=message.message_id,
+            reply_to_message_id=message_id,
         )
         return 400
