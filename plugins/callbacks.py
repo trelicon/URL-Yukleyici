@@ -20,7 +20,7 @@ async def button(bot, update):
     message = update.message
     if cb_data == "home":
         await update.answer()
-        await update.message.edit_text(
+        await message.edit_text(
             text=Translation.START_TEXT.format(update.from_user.mention),
             reply_markup=Translation.START_BUTTONS,
             disable_web_page_preview=True
@@ -41,7 +41,7 @@ async def button(bot, update):
             await update.answer("Herhangi bir thumbnail ayarlamadınız!", show_alert=True)
         else:
             await update.answer()
-            await bot.send_photo(update.message.chat.id, thumbnail, "Ayarlı Thumbnail",
+            await bot.send_photo(message.chat.id, thumbnail, "Ayarlı Thumbnail",
                                reply_markup=types.InlineKeyboardMarkup([[
                                    types.InlineKeyboardButton("Sil",
                                                               callback_data="deleteThumbnail")
@@ -102,7 +102,7 @@ async def button(bot, update):
             await db.set_notif(user_id, True)
         await Settings(message)
     elif "close" in update.data:
-        await update.message.delete(True)
+        await message.delete(True)
     elif "|" in cb_data:
         await yt_dlp_call_back(bot, update)
     elif "=" in cb_data:
