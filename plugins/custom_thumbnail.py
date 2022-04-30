@@ -8,7 +8,7 @@ from translation import Translation
 
 
 @Client.on_message(filters.incoming & filters.photo)
-@Client.on_message(filters.command(["setthumb", "set_thumbnail"]) & filters.incoming)
+@Client.on_message(filters.command(["setthumb", "set_thumbnail"]) & filters.incoming & filters.reply)
 async def set_thumbnail(c: Client, m: "types.Message"):
     if (not m.reply_to_message) or (not m.reply_to_message.photo):
         thumbnail = m.photo.file_id
