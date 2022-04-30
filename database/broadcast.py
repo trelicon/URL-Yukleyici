@@ -3,6 +3,7 @@ import datetime, asyncio, time
 from pyrogram import Client
 from database.database import db
 from pyrogram.types import Message
+from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import UserNotParticipant
 from config import BROADCAST_AS_COPY, LOGGER, AUTH_CHANNEL
 from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked, PeerIdInvalid
@@ -16,7 +17,7 @@ async def broadcast_messages(bot, user_id, message):
         except Exception as e:
             LOGGER.exception(e)
         else:
-            if user.status == 'banned':
+            if user.status == ChatMemberStatus.BANNED:
                 return False, "Blocked"
     try:
         if BROADCAST_AS_COPY is False:
@@ -61,7 +62,7 @@ async def broadcast_handler(bot: Client, m: Message):
             success += 1
         elif pti == False:
             if sh == "Blocked":
-                blocked+=1
+                blocked +=1
             elif sh == "Deleted":
                 deleted += 1
             elif sh == "Error":
