@@ -8,6 +8,7 @@ LOGGER = logging.getLogger(__name__)
 import os, time, asyncio, json
 
 from PIL import Image
+from pyrogram import enums
 from translation import Translation
 from pyrogram import Client, filters
 from config import AUTH_CHANNEL, LOG_CHANNEL, DOWNLOAD_LOCATION, CHUNK_SIZE, DEF_THUMB_NAIL_VID_S, HTTP_PROXY
@@ -44,10 +45,10 @@ async def echo(bot, update):
         fsub = await handle_force_subscribe(bot, update)
         if fsub == 400:
             return
-
+    
     message_id = update.id
     chat_id = update.chat.id
-    await update.reply_chat_action(action="typing")
+    await update.reply_chat_action(enums.ChatAction.TYPING)
     send_message = await update.reply(text=f"İşleniyor...⏳", disable_web_page_preview=True, reply_to_message_id=message_id)
 
     LOGGER.info(update.from_user)
