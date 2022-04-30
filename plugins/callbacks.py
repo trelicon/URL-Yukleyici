@@ -101,7 +101,7 @@ async def button(bot, update):
             await update.answer("Bot bildirimleri etkinleştirildi.")
             await db.set_notif(user_id, True)
         await Settings(message)
-    elif "close" in update.data:
+    elif "close" in cb_data:
         await message.delete(True)
     elif "|" in cb_data:
         await yt_dlp_call_back(bot, update)
