@@ -1,10 +1,3 @@
-import logging
-
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
-                    level=logging.INFO)
-LOGGER = logging.getLogger(__name__)
-
 import asyncio
 import json
 import os
@@ -23,6 +16,13 @@ from functions.display_progress import progress_for_pyrogram, humanbytes
 from functions.help_Nekmo_ffmpeg import generate_screen_shots, VideoThumb, VideoMetaData, VMMetaData, DocumentThumb, \
     AudioMetaData
 from functions.utils import remove_urls, remove_emoji
+
+import logging
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
+                    level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
 
 
 async def yt_dlp_call_back(bot, update):
@@ -55,7 +55,7 @@ async def yt_dlp_call_back(bot, update):
     try:
         with open(save_ytdl_json_path, "r", encoding="utf8") as f:
             response_json = json.load(f)
-    except (FileNotFoundError) as e:
+    except FileNotFoundError as e:
         await bot.delete_messages(
             chat_id=chat_id,
             message_ids=message_id,
@@ -66,10 +66,8 @@ async def yt_dlp_call_back(bot, update):
     response_json = response_json[0]
     # TODO: temporary limitations
     # LOGGER.info(response_json)
-    #
 
     yt_dlp_url = message.reply_to_message.text
-    #
 
     name = str(response_json.get("title")[:100]) + \
            "." + yt_dlp_ext
@@ -229,7 +227,8 @@ async def yt_dlp_call_back(bot, update):
     t_response = stdout.decode().strip()
     # LOGGER.info(e_response)
     # LOGGER.info(t_response)
-    ad_string_to_replace = "please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U"
+    ad_string_to_replace = "please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the " \
+                           "appropriate issue template. Confirm you are on the latest version using  yt-dlp -U "
     if e_response and ad_string_to_replace in e_response:
         error_message = e_response.replace(ad_string_to_replace, "")
         await message.edit_caption(caption=error_message)
@@ -334,7 +333,7 @@ async def yt_dlp_call_back(bot, update):
                         )
                     elif tg_send_type == "vm":
                         width, duration = await VMMetaData(path)
-                        thumbnail = await VideoThumb(bot, update, duration, path)
+                        thumbnail = await VideoThumb(bot, update, duration, path, random)
                         await message.reply_to_message.reply_chat_action(ChatAction.UPLOAD_VIDEO_NOTE)
                         copy = await bot.send_video_note(
                             chat_id=chat_id,
