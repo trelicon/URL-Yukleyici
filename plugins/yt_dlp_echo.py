@@ -8,9 +8,9 @@ LOGGER = logging.getLogger(__name__)
 import os, time, asyncio, json
 
 from PIL import Image
-from pyrogram import enums
 from translation import Translation
 from pyrogram import Client, filters
+from pyrogram.enums import MessageEntityType, ChatAction
 from config import AUTH_CHANNEL, LOG_CHANNEL, DOWNLOAD_LOCATION, CHUNK_SIZE, DEF_THUMB_NAIL_VID_S, HTTP_PROXY
 
 from database.add import add_user_to_database
@@ -22,6 +22,7 @@ from functions.utils import URL_REGEX
 
 
 @Client.on_message(filters.incoming & filters.regex(pattern=URL_REGEX))
+@Client.on_edited_message(filters.incoming & filters.regex(pattern=URL_REGEX))
 async def echo(bot, update):
     if LOG_CHANNEL:
         try:
@@ -48,7 +49,7 @@ async def echo(bot, update):
     
     message_id = update.id
     chat_id = update.chat.id
-    await update.reply_chat_action(enums.ChatAction.TYPING)
+    await update.reply_chat_action(ChatAction.TYPING)
     send_message = await update.reply(text=f"İşleniyor...⏳", disable_web_page_preview=True, reply_to_message_id=message_id)
 
     LOGGER.info(update.from_user)
@@ -71,9 +72,9 @@ async def echo(bot, update):
             yt_dlp_password = url_parts[3]
         else:
             for entity in update.entities:
-                if entity.type == "text_link":
+                if entity.type == MessageEntityType.TEXT_LINK:
                     url = entity.url
-                elif entity.type == "url":
+                elif entity.type == MessageEntityType.URL:
                     o = entity.offset
                     l = entity.length
                     url = url[o:o + l]
@@ -89,9 +90,9 @@ async def echo(bot, update):
         LOGGER.info(file_name)
     else:
         for entity in update.entities:
-            if entity.type == "text_link":
+            if entity.type == MessageEntityType.TEXT_LINK:
                 url = entity.url
-            elif entity.type == "url":
+            elif entity.type == MessageEntityType.URL:
                 o = entity.offset
                 l = entity.length
                 url = url[o:o + l]

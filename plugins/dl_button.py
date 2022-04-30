@@ -10,10 +10,10 @@ import time
 import asyncio
 import aiohttp
 
-from pyrogram import enums
 from datetime import datetime
 from database.database import db
 from translation import Translation
+from pyrogram.enums import ChatAction, MessageEntityType
 
 from pyrogram.errors import FloodWait, MessageNotModified
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -28,7 +28,6 @@ async def ddl_call_back(bot, update):
     tg_send_type, yt_dlp_format, yt_dlp_ext, random = cb_data.split("=")
 
     dtime = str(time.time())
-    action = enums.ChatAction
     message = update.message
     user_id = update.from_user.id
     chat_id = message.chat.id
@@ -54,9 +53,9 @@ async def ddl_call_back(bot, update):
                 return
         else:
             for entity in message.reply_to_message.entities:
-                if entity.type == "text_link":
+                if entity.type == MessageEntityType.TEXT_LINK:
                     yt_dlp_url = entity.url
-                elif entity.type == "url":
+                elif entity.type == MessageEntityType.URL:
                     o = entity.offset
                     l = entity.length
                     yt_dlp_url = yt_dlp_url[o:o + l]
@@ -69,9 +68,9 @@ async def ddl_call_back(bot, update):
         LOGGER.info(custom_file_name)
     else:
         for entity in message.reply_to_message.entities:
-            if entity.type == "text_link":
+            if entity.type == MessageEntityType.TEXT_LINK:
                 yt_dlp_url = entity.url
-            elif entity.type == "url":
+            elif entity.type == MessageEntityType.URL:
                 o = entity.offset
                 l = entity.length
                 yt_dlp_url = yt_dlp_url[o:o + l]
@@ -147,7 +146,7 @@ async def ddl_call_back(bot, update):
                 if tg_send_type == "audio":
                     duration = await AudioMetaData(download_directory)
                     thumbnail = await DocumentThumb(bot, update)
-                    await message.reply_to_message.reply_chat_action(action.UPLOAD_AUDIO)
+                    await message.reply_to_message.reply_chat_action(ChatAction.UPLOAD_AUDIO)
                     copy = await bot.send_audio(
                         chat_id=chat_id,
                         audio=download_directory,
@@ -165,7 +164,7 @@ async def ddl_call_back(bot, update):
                     )
                 elif (await db.get_upload_as_doc(user_id)) is False:
                     thumbnail = await DocumentThumb(bot, update)
-                    await message.reply_to_message.reply_chat_action(action.UPLOAD_DOCUMENT)
+                    await message.reply_to_message.reply_chat_action(ChatAction.UPLOAD_DOCUMENT)
                     copy = await bot.send_document(
                         chat_id=chat_id,
                         document=download_directory,
@@ -183,7 +182,7 @@ async def ddl_call_back(bot, update):
                 else:
                     width, height, duration = await VideoMetaData(download_directory)
                     thumb_image_path = await VideoThumb(bot, update, duration, download_directory)
-                    await message.reply_to_message.reply_chat_action(action.UPLOAD_VIDEO)
+                    await message.reply_to_message.reply_chat_action(ChatAction.UPLOAD_VIDEO)
                     copy = await bot.send_video(
                         chat_id=chat_id,
                         video=download_directory,

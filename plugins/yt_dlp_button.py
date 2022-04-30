@@ -13,7 +13,7 @@ import time
 from datetime import datetime
 
 from config import DOWNLOAD_LOCATION, LOG_CHANNEL, HTTP_PROXY, TG_MAX_FILE_SIZE, DEF_WATER_MARK_FILE, PROMO
-from pyrogram import enums
+from pyrogram.enums import MessageEntityType, ChatAction
 from database.database import db
 from translation import Translation
 
@@ -36,7 +36,6 @@ async def yt_dlp_call_back(bot, update):
     user_id = update.from_user.id
     chat_id = message.chat.id
     message_id = message.id
-    action = enums.ChatAction
     
     if current_user_id != user_id:
         await bot.answer_callback_query(
@@ -100,10 +99,10 @@ async def yt_dlp_call_back(bot, update):
             yt_dlp_username = url_parts[2]
             yt_dlp_password = url_parts[3]
         else:
-            for entity in message.entities:
-                if entity.type == "text_link":
+            for entity in message.reply_to_message.entities:
+                if entity.type == MessageEntityType.TEXT_LINK:
                     yt_dlp_url = entity.url
-                elif entity.type == "url":
+                elif entity.type == MessageEntityType.URL:
                     o = entity.offset
                     l = entity.length
                     yt_dlp_url = yt_dlp_url[o:o + l]
@@ -128,10 +127,10 @@ async def yt_dlp_call_back(bot, update):
                     caption = title
             else:
                 caption = title
-        for entity in message.entities:
-            if entity.type == "text_link":
+        for entity in message.reply_to_message.entities:
+            if entity.type == MessageEntityType.TEXT_LINK:
                 yt_dlp_url = entity.url
-            elif entity.type == "url":
+            elif entity.type == MessageEntityType.URL:
                 o = entity.offset
                 l = entity.length
                 yt_dlp_url = yt_dlp_url[o:o + l]
@@ -250,7 +249,7 @@ async def yt_dlp_call_back(bot, update):
         #
         LOGGER.info(tmp_directory_for_each_user)
         user = await bot.get_me()
-        BotMention = user["mention"]
+        BotMention = user.mention
         UserMention = update.from_user.mention
 
         if PROMO:
@@ -317,7 +316,7 @@ async def yt_dlp_call_back(bot, update):
                     if tg_send_type == "audio":
                         duration = await AudioMetaData(path)
                         thumbnail = await DocumentThumb(bot, update)
-                        await message.reply_to_message.reply_chat_action(action.UPLOAD_AUDIO)
+                        await message.reply_to_message.reply_chat_action(ChatAction.UPLOAD_AUDIO)
                         copy = await bot.send_audio(
                             chat_id=chat_id,
                             audio=path,
@@ -336,7 +335,7 @@ async def yt_dlp_call_back(bot, update):
                     elif tg_send_type == "vm":
                         width, duration = await VMMetaData(path)
                         thumbnail = await VideoThumb(bot, update, duration, path)
-                        await message.reply_to_message.reply_chat_action(action.UPLOAD_VIDEO_NOTE)
+                        await message.reply_to_message.reply_chat_action(ChatAction.UPLOAD_VIDEO_NOTE)
                         copy = await bot.send_video_note(
                             chat_id=chat_id,
                             video_note=path,
@@ -368,7 +367,7 @@ async def yt_dlp_call_back(bot, update):
                         )
                     elif (await db.get_upload_as_doc(user_id)) is True:
                         thumbnail = await DocumentThumb(bot, update)
-                        await message.reply_to_message.reply_chat_action(action.UPLOAD_DOCUMENT)
+                        await message.reply_to_message.reply_chat_action(ChatAction.UPLOAD_DOCUMENT)
                         copy = await bot.send_document(
                             chat_id=chat_id,
                             document=path,
@@ -386,7 +385,7 @@ async def yt_dlp_call_back(bot, update):
                     else:
                         width, height, duration = await VideoMetaData(path)
                         thumb_image_path = await VideoThumb(bot, update, duration, path, random)
-                        await message.reply_to_message.reply_chat_action(action.UPLOAD_VIDEO)
+                        await message.reply_to_message.reply_chat_action(ChatAction.UPLOAD_VIDEO)
                         copy = await bot.send_video(
                             chat_id=chat_id,
                             video=path,
