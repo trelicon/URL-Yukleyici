@@ -16,7 +16,7 @@ from plugins.settings.settings import *
 from translation import Translation
 
 
-@Client.on_message(filters.incoming & filters.photo & ~filters.edited)
+@Client.on_message(filters.incoming & filters.photo)
 async def photo_handler(bot: Client, event: Message):
     if not event.from_user:
         return await event.reply_text("Seni tanımıyorum ahbap.")
@@ -30,7 +30,7 @@ async def photo_handler(bot: Client, event: Message):
     await editable.edit(Translation.SAVED_CUSTOM_THUMB_NAIL)
 
 
-@Client.on_message(filters.incoming & filters.command(["delthumb", "deletethumb"]) & ~filters.edited)
+@Client.on_message(filters.incoming & filters.command(["delthumb", "deletethumb"]))
 async def delete_thumb_handler(bot: Client, event: Message):
     if not event.from_user:
         return await event.reply_text("Seni tanımıyorum ahbap.")
@@ -49,7 +49,7 @@ async def delete_thumb_handler(bot: Client, event: Message):
     )
 
 
-@Client.on_message(filters.incoming & filters.command("showthumb") & ~filters.edited)
+@Client.on_message(filters.incoming & filters.command("showthumb"))
 async def viewthumbnail(bot, update):
     if not update.from_user:
         return await update.reply_text("Seni tanımıyorum ahbap.")
@@ -67,6 +67,6 @@ async def viewthumbnail(bot, update):
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("🗑️ Sil", callback_data="deleteThumbnail")]]
             ),
-            reply_to_message_id=update.message_id)
+            reply_to_message_id=update.id)
     else:
         await update.reply_text(text=f"Thumbnail Bulunamadı.")
