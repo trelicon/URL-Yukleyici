@@ -2,7 +2,7 @@
 
 import datetime
 import motor.motor_asyncio
-from config import DATABASE_URL
+from config import DATABASE_URL, SESSION_NAME
 
 class Database:
     
@@ -99,4 +99,4 @@ class Database:
         user = await self.col.find_one({'id': int(id)})
         return user or None
 
-db = Database(DATABASE_URL, "Url-Uploader")
+db = Database(DATABASE_URL, SESSION_NAME)
