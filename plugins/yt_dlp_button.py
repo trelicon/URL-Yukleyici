@@ -318,7 +318,7 @@ async def yt_dlp_call_back(bot, update):
                     if tg_send_type == "audio":
                         duration = await AudioMetaData(path)
                         thumbnail = await DocumentThumb(bot, update)
-                        await update.message.reply_to_message.reply_chat_action(action.UPLOAD_AUDIO)
+                        await message.reply_to_message.reply_chat_action(action.UPLOAD_AUDIO)
                         copy = await bot.send_audio(
                             chat_id=chat_id,
                             audio=path,
@@ -337,7 +337,7 @@ async def yt_dlp_call_back(bot, update):
                     elif tg_send_type == "vm":
                         width, duration = await VMMetaData(path)
                         thumbnail = await VideoThumb(bot, update, duration, path)
-                        await update.message.reply_to_message.reply_chat_action(action.UPLOAD_VIDEO_NOTE)
+                        await message.reply_to_message.reply_chat_action(action.UPLOAD_VIDEO_NOTE)
                         copy = await bot.send_video_note(
                             chat_id=chat_id,
                             video_note=path,
@@ -369,7 +369,7 @@ async def yt_dlp_call_back(bot, update):
                         )
                     elif (await db.get_upload_as_doc(user_id)) is True:
                         thumbnail = await DocumentThumb(bot, update)
-                        await update.message.reply_to_message.reply_chat_action(action.UPLOAD_DOCUMENT)
+                        await message.reply_to_message.reply_chat_action(action.UPLOAD_DOCUMENT)
                         copy = await bot.send_document(
                             chat_id=chat_id,
                             document=path,
