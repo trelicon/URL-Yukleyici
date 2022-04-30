@@ -32,6 +32,8 @@ async def yt_dlp_call_back(bot, update):
 
     current_user_id = update.message.reply_to_message.from_user.id
     user_id = update.from_user.id
+    chat_id = update.message.chat.id
+    message_id = update.message.id
     if current_user_id != user_id:
         await bot.answer_callback_query(
             callback_query_id=update.id,
@@ -52,8 +54,8 @@ async def yt_dlp_call_back(bot, update):
             response_json = json.load(f)
     except (FileNotFoundError) as e:
         await bot.delete_messages(
-            chat_id=update.message.chat.id,
-            message_ids=update.message.message_id,
+            chat_id=chat_id,
+            message_ids=message_id,
             revoke=True
         )
         return False
@@ -94,7 +96,7 @@ async def yt_dlp_call_back(bot, update):
             yt_dlp_username = url_parts[2]
             yt_dlp_password = url_parts[3]
         else:
-            for entity in update.message.reply_to_message.entities:
+            for entity in update.message.entities:
                 if entity.type == "text_link":
                     yt_dlp_url = entity.url
                 elif entity.type == "url":
@@ -122,7 +124,7 @@ async def yt_dlp_call_back(bot, update):
                     caption = title
             else:
                 caption = title
-        for entity in update.message.reply_to_message.entities:
+        for entity in update.message.entities:
             if entity.type == "text_link":
                 yt_dlp_url = entity.url
             elif entity.type == "url":
@@ -132,9 +134,9 @@ async def yt_dlp_call_back(bot, update):
 
     await bot.edit_message_text(
         text=Translation.DOWNLOAD_START.format(custom_file_name),
-        chat_id=update.message.chat.id,
+        chat_id=chat_id,
         parse_mode="html",
-        message_id=update.message.message_id
+        message_id=message_id
     )
 
     tmp_directory_for_each_user = os.path.join(
@@ -283,9 +285,9 @@ async def yt_dlp_call_back(bot, update):
 
             if file_size > TG_MAX_FILE_SIZE:
                 await bot.edit_message_text(
-                    chat_id=update.message.chat.id,
+                    chat_id=chat_id,
                     text=Translation.RCHD_TG_API_LIMIT.format(time_taken_for_download, humanbytes(file_size)),
-                    message_id=update.message.message_id
+                    message_id=message_id
                 )
             else:
                 is_w_f = False
@@ -300,8 +302,8 @@ async def yt_dlp_call_back(bot, update):
                 try:
                     await bot.edit_message_text(
                         text=Translation.UPLOAD_START,
-                        chat_id=update.message.chat.id,
-                        message_id=update.message.message_id
+                        chat_id=chat_id,
+                        message_id=message_id
                     )
                 except:
                     pass
@@ -317,10 +319,9 @@ async def yt_dlp_call_back(bot, update):
                             chat_id=update.message.chat.id,
                             audio=path,
                             caption=caption,
-                            parse_mode="HTML",
                             duration=duration,
                             thumb=thumbnail,
-                            reply_to_message_id=update.message.reply_to_message.message_id,
+                            reply_to_message_id=update.message.reply_to_message.id,
                             reply_markup=reply_markup,
                             progress=progress_for_pyrogram,
                             progress_args=(
@@ -339,7 +340,7 @@ async def yt_dlp_call_back(bot, update):
                             duration=duration,
                             length=width,
                             thumb=thumbnail,
-                            reply_to_message_id=update.message.reply_to_message.message_id,
+                            reply_to_message_id=update.message.reply_to_message.id,
                             reply_markup=reply_markup,
                             progress=progress_for_pyrogram,
                             progress_args=(
@@ -353,8 +354,7 @@ async def yt_dlp_call_back(bot, update):
                             chat_id=update.message.chat.id,
                             document=path,
                             caption=caption,
-                            parse_mode="HTML",
-                            reply_to_message_id=update.message.reply_to_message.message_id,
+                            reply_to_message_id=update.message.reply_to_message.id,
                             reply_markup=reply_markup,
                             progress=progress_for_pyrogram,
                             progress_args=(
@@ -371,8 +371,7 @@ async def yt_dlp_call_back(bot, update):
                             document=path,
                             thumb=thumbnail,
                             caption=caption,
-                            parse_mode="HTML",
-                            reply_to_message_id=update.message.reply_to_message.message_id,
+                            reply_to_message_id=update.message.reply_to_message.id,
                             reply_markup=reply_markup,
                             progress=progress_for_pyrogram,
                             progress_args=(
@@ -389,14 +388,13 @@ async def yt_dlp_call_back(bot, update):
                             chat_id=update.message.chat.id,
                             video=path,
                             caption=caption,
-                            parse_mode="HTML",
                             duration=duration,
                             width=width,
                             height=height,
                             supports_streaming=True,
                             reply_markup=reply_markup,
                             thumb=thumb_image_path,
-                            reply_to_message_id=update.message.reply_to_message.message_id,
+                            reply_to_message_id=update.message.reply_to_message.id,
                             progress=progress_for_pyrogram,
                             progress_args=(
                                 Translation.UPLOAD_START,
@@ -407,8 +405,8 @@ async def yt_dlp_call_back(bot, update):
                     if LOG_CHANNEL:
                         await copy.copy(LOG_CHANNEL)
                 except FloodWait as e:
-                    print(f"Sleep of {e.x} required by FloodWait ...")
-                    time.sleep(e.x)
+                    print(f"Sleep of {e.value} required by FloodWait ...")
+                    time.sleep(e.value)
                 except MessageNotModified:
                     pass
 
@@ -438,9 +436,9 @@ async def yt_dlp_call_back(bot, update):
                                     )
                                 i = i + 1
                     await bot.send_media_group(
-                        chat_id=update.message.chat.id,
+                        chat_id=chat_id,
                         disable_notification=True,
-                        reply_to_message_id=update.message.message_id,
+                        reply_to_message_id=message_id,
                         media=media_album_p
                     )
             #
@@ -448,8 +446,8 @@ async def yt_dlp_call_back(bot, update):
                 await bot.edit_message_text(
                     text=Translation.AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS.format(time_taken_for_download,
                                                                                 time_taken_for_upload),
-                    chat_id=update.message.chat.id,
-                    message_id=update.message.message_id,
+                    chat_id=chat_id,
+                    message_id=message_id,
                     disable_web_page_preview=True
                 )
             except MessageNotModified:
