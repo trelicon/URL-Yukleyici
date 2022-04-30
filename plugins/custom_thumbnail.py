@@ -1,13 +1,4 @@
-import logging
-
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
-from pyrogram import Client
-
-logging.getLogger("pyrogram").setLevel(logging.WARNING)
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from functions.forcesub import handle_force_subscribe
 from config import AUTH_CHANNEL
