@@ -4,8 +4,9 @@ import datetime
 import motor.motor_asyncio
 from config import DATABASE_URL, SESSION_NAME
 
+
 class Database:
-    
+
     def __init__(self, uri, database_name):
         self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
         self.db = self._client[database_name]
@@ -22,7 +23,7 @@ class Database:
             generate_ss=False,
             generate_sample_video=False
         )
-    
+
     async def add_user(self, id):
         user = self.new_user(id)
         await self.col.insert_one(user)
@@ -98,5 +99,6 @@ class Database:
     async def get_user_data(self, id) -> dict:
         user = await self.col.find_one({'id': int(id)})
         return user or None
+
 
 db = Database(DATABASE_URL, SESSION_NAME)
