@@ -13,6 +13,7 @@ import time
 from datetime import datetime
 
 from config import DOWNLOAD_LOCATION, LOG_CHANNEL, HTTP_PROXY, TG_MAX_FILE_SIZE, DEF_WATER_MARK_FILE, PROMO
+from pyrogram import enums
 from database.database import db
 from translation import Translation
 
@@ -29,11 +30,14 @@ async def yt_dlp_call_back(bot, update):
     tg_send_type, yt_dlp_format, yt_dlp_ext, random = cb_data.split("|")
 
     dtime = str(time.time())
-
-    current_user_id = update.message.reply_to_message.from_user.id
+    
+    message = update.message
+    current_user_id = message.reply_to_message.from_user.id
     user_id = update.from_user.id
-    chat_id = update.message.chat.id
-    message_id = update.message.id
+    chat_id = message.chat.id
+    message_id = message.id
+    action = enums.ChatAction
+    
     if current_user_id != user_id:
         await bot.answer_callback_query(
             callback_query_id=update.id,
@@ -65,7 +69,7 @@ async def yt_dlp_call_back(bot, update):
     # LOGGER.info(response_json)
     #
 
-    yt_dlp_url = update.message.reply_to_message.text
+    yt_dlp_url = message.reply_to_message.text
     #
 
     name = str(response_json.get("title")[:100]) + \
@@ -96,7 +100,7 @@ async def yt_dlp_call_back(bot, update):
             yt_dlp_username = url_parts[2]
             yt_dlp_password = url_parts[3]
         else:
-            for entity in update.message.entities:
+            for entity in message.entities:
                 if entity.type == "text_link":
                     yt_dlp_url = entity.url
                 elif entity.type == "url":
@@ -124,7 +128,7 @@ async def yt_dlp_call_back(bot, update):
                     caption = title
             else:
                 caption = title
-        for entity in update.message.entities:
+        for entity in message.entities:
             if entity.type == "text_link":
                 yt_dlp_url = entity.url
             elif entity.type == "url":
@@ -230,7 +234,7 @@ async def yt_dlp_call_back(bot, update):
     ad_string_to_replace = "please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U"
     if e_response and ad_string_to_replace in e_response:
         error_message = e_response.replace(ad_string_to_replace, "")
-        await update.message.edit_caption(caption=error_message)
+        await message.edit_caption(caption=error_message)
         return False, None
     if t_response:
         # LOGGER.info(t_response)
@@ -314,78 +318,78 @@ async def yt_dlp_call_back(bot, update):
                     if tg_send_type == "audio":
                         duration = await AudioMetaData(path)
                         thumbnail = await DocumentThumb(bot, update)
-                        await update.message.reply_to_message.reply_chat_action("upload_audio")
+                        await update.message.reply_to_message.reply_chat_action(action.UPLOAD_AUDIO)
                         copy = await bot.send_audio(
-                            chat_id=update.message.chat.id,
+                            chat_id=chat_id,
                             audio=path,
                             caption=caption,
                             duration=duration,
                             thumb=thumbnail,
-                            reply_to_message_id=update.message.reply_to_message.id,
+                            reply_to_message_id=message.reply_to_message.id,
                             reply_markup=reply_markup,
                             progress=progress_for_pyrogram,
                             progress_args=(
                                 Translation.UPLOAD_START,
-                                update.message,
+                                message,
                                 start_time
                             )
                         )
                     elif tg_send_type == "vm":
                         width, duration = await VMMetaData(path)
                         thumbnail = await VideoThumb(bot, update, duration, path)
-                        await update.message.reply_to_message.reply_chat_action("upload_video_note")
+                        await update.message.reply_to_message.reply_chat_action(action.UPLOAD_VIDEO_NOTE)
                         copy = await bot.send_video_note(
-                            chat_id=update.message.chat.id,
+                            chat_id=chat_id,
                             video_note=path,
                             duration=duration,
                             length=width,
                             thumb=thumbnail,
-                            reply_to_message_id=update.message.reply_to_message.id,
+                            reply_to_message_id=message.reply_to_message.id,
                             reply_markup=reply_markup,
                             progress=progress_for_pyrogram,
                             progress_args=(
                                 Translation.UPLOAD_START,
-                                update.message,
+                                message,
                                 start_time
                             )
                         )
                     elif tg_send_type == "file":
                         copy = await bot.send_document(
-                            chat_id=update.message.chat.id,
+                            chat_id=chat_id,
                             document=path,
                             caption=caption,
-                            reply_to_message_id=update.message.reply_to_message.id,
+                            reply_to_message_id=message.reply_to_message.id,
                             reply_markup=reply_markup,
                             progress=progress_for_pyrogram,
                             progress_args=(
                                 Translation.UPLOAD_START,
-                                update.message,
+                                message,
                                 start_time
                             )
                         )
                     elif (await db.get_upload_as_doc(user_id)) is True:
                         thumbnail = await DocumentThumb(bot, update)
-                        await update.message.reply_to_message.reply_chat_action("upload_document")
+                        await update.message.reply_to_message.reply_chat_action(action.UPLOAD_DOCUMENT)
                         copy = await bot.send_document(
-                            chat_id=update.message.chat.id,
+                            chat_id=chat_id,
                             document=path,
                             thumb=thumbnail,
                             caption=caption,
-                            reply_to_message_id=update.message.reply_to_message.id,
+                            reply_to_message_id=message.reply_to_message.id,
                             reply_markup=reply_markup,
                             progress=progress_for_pyrogram,
                             progress_args=(
                                 Translation.UPLOAD_START,
-                                update.message,
+                                message,
                                 start_time
                             )
                         )
                     else:
                         width, height, duration = await VideoMetaData(path)
                         thumb_image_path = await VideoThumb(bot, update, duration, path, random)
-                        await update.message.reply_to_message.reply_chat_action("upload_video")
+                        await message.reply_to_message.reply_chat_action(action.UPLOAD_VIDEO)
                         copy = await bot.send_video(
-                            chat_id=update.message.chat.id,
+                            chat_id=chat_id,
                             video=path,
                             caption=caption,
                             duration=duration,
@@ -394,11 +398,11 @@ async def yt_dlp_call_back(bot, update):
                             supports_streaming=True,
                             reply_markup=reply_markup,
                             thumb=thumb_image_path,
-                            reply_to_message_id=update.message.reply_to_message.id,
+                            reply_to_message_id=message.reply_to_message.id,
                             progress=progress_for_pyrogram,
                             progress_args=(
                                 Translation.UPLOAD_START,
-                                update.message,
+                                message,
                                 start_time
                             )
                         )
