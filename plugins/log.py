@@ -1,4 +1,5 @@
 from config import OWNER_ID
+from pyrogram.types import Message
 from pyrogram import Client, filters
 
 import logging
@@ -10,11 +11,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 @Client.on_message(filters.command('log') & filters.user(OWNER_ID))
-async def sendLogs(client, message):
+async def log_handler(c: Client, m: Message):
     with open('log.txt', 'rb') as f:
         try:
-            await client.send_document(document=f,
-                                       file_name=f.name, reply_to_message_id=message.id,
-                                       chat_id=message.chat.id, caption=f.name)
+            await c.send_document(document=f,
+                                  file_name=f.name, reply_to_message_id=m.id,
+                                  chat_id=m.chat.id, caption=f.name)
         except Exception as e:
-            await message.reply_text(str(e))
+            await m.reply_text(str(e))
