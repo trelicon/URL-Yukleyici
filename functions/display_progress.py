@@ -42,8 +42,7 @@ async def progress_for_pyrogram(
                     text="**{}**\n\n {}".format(
                         ud_type,
                         tmp
-                    ),
-                    parse_mode='markdown'
+                    )
                 )
             except:
                 pass
