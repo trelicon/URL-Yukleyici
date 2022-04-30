@@ -4,6 +4,12 @@ from config import AUTH_CHANNEL, START_TXT, BUTTON_TEXT
 from pyrogram.errors import FloodWait, UserNotParticipant
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+LOGGER = logging.getLogger(__name__)
+
 
 async def handle_force_subscribe(bot, message):
     message_id = message.id
@@ -43,4 +49,5 @@ async def handle_force_subscribe(bot, message):
             disable_web_page_preview=True,
             reply_to_message_id=message_id,
         )
+        LOGGER.info(e)
         return 400
