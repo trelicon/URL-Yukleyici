@@ -139,7 +139,6 @@ async def yt_dlp_call_back(bot, update):
     await bot.edit_message_text(
         text=Translation.DOWNLOAD_START.format(custom_file_name),
         chat_id=chat_id,
-        parse_mode="html",
         message_id=message_id
     )
 
