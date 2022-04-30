@@ -250,7 +250,7 @@ async def yt_dlp_call_back(bot, update):
         #
         LOGGER.info(tmp_directory_for_each_user)
         user = await bot.get_me()
-        BotMention = user["mention"]
+        BotMention = user.mention
         UserMention = update.from_user.mention
 
         if PROMO:
