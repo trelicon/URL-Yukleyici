@@ -57,8 +57,7 @@ async def Settings(m: "types.Message"):
         await message(
             text="**⚙ Bot Ayarları**",
             reply_markup=types.InlineKeyboardMarkup(buttons_markup),
-            disable_web_page_preview=True,
-            parse_mode="Markdown"
+            disable_web_page_preview=True
         )
     except errors.MessageNotModified:
         pass
