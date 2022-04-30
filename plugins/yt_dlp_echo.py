@@ -45,7 +45,7 @@ async def echo(bot, update):
         if fsub == 400:
             return
 
-    message_id = update.message_id
+    message_id = update.id
     chat_id = update.chat.id
     await update.reply_chat_action(action="typing")
     send_message = await update.reply(text=f"İşleniyor...⏳", disable_web_page_preview=True, reply_to_message_id=message_id)
@@ -151,7 +151,6 @@ async def echo(bot, update):
         time.sleep(1)
         await send_message.edit_text(
             text=Translation.NO_VOID_FORMAT_FOUND.format(str(error_message)),
-            parse_mode="html",
             disable_web_page_preview=True
         )
         return False
@@ -311,6 +310,5 @@ async def echo(bot, update):
     await send_message.edit_text(
         text=Translation.FORMAT_SELECTION,
         reply_markup=reply_markup,
-        parse_mode="html",
         disable_web_page_preview=True
     )
