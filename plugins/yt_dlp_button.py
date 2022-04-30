@@ -420,16 +420,14 @@ async def yt_dlp_call_back(bot, update):
                 if (await db.get_generate_ss(user_id)) is True:
                     if images is not None:
                         i = 0
-                        uname = (await bot.get_me())['username']
-                        caption = f'@{str(uname)}'
+                        caption = BotMention
                         for image in images:
                             if os.path.exists(str(image)):
                                 if i == 0:
                                     media_album_p.append(
                                         InputMediaPhoto(
                                             media=image,
-                                            caption=caption,
-                                            parse_mode="html"
+                                            caption=caption
                                         )
                                     )
                                 else:
