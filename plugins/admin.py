@@ -17,7 +17,7 @@ from database.database import db
 from functions.display_progress import humanbytes
 from database.broadcast import broadcast_handler
 
-@Client.on_message(filters.command("status") & filters.user(OWNER_ID) & ~filters.edited)
+@Client.on_message(filters.command("status") & filters.user(OWNER_ID))
 async def status_handler(_, m: Message):
         heroku_api = "https://api.heroku.com"
         total, used, free = shutil.disk_usage(".")
@@ -40,7 +40,6 @@ async def status_handler(_, m: Message):
         else:
             await m.reply_text(
                 text=text,
-                parse_mode="Markdown",
                 quote=True
             )
             return
@@ -92,11 +91,10 @@ async def status_handler(_, m: Message):
                     f"• `{hours}` **Saat ve** `{minutes}` **Dakika\n💯: {quota_percent}%**\n\n"
                     "**❌ Tahmini Kalan Süre**\n"
                     f"• `{day}` **Gün**" + '\n\n' + text,
-                    parse_mode="Markdown",
                     quote=True
                 )
 
-@Client.on_message(filters.command("broadcast") & filters.user(OWNER_ID) & filters.reply & ~filters.edited)
+@Client.on_message(filters.command("broadcast") & filters.user(OWNER_ID) & filters.reply)
 async def broadcast_in(_, m: Message):
     await broadcast_handler(_, m)
 
