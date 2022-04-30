@@ -11,7 +11,7 @@ import os
 import time
 from datetime import datetime
 
-from config import DOWNLOAD_LOCATION, TG_MAX_FILE_SIZE, LOG_CHANNEL, PROCESS_MAX_TIMEOUT, CHUNK_SIZE
+from config import DOWNLOAD_LOCATION, TG_MAX_FILE_SIZE, LOG_CHANNEL, PROCESS_MAX_TIMEOUT, CHUNK_SIZE, PROMO
 
 from translation import Translation
 from database.database import db
@@ -132,10 +132,15 @@ async def ddl_call_back(bot, update):
         else:
 
             start_time = time.time()
-            btn = [[
-                InlineKeyboardButton(f"Upload By {update.from_user.id}", url=f"tg://user?id={update.from_user.id}")
-            ]]
-            reply_markup = InlineKeyboardMarkup(btn)
+            if PROMO:
+                caption += Translation.UPLOADER.format(UserMention, BotMention)
+                btn = [[
+                    InlineKeyboardButton(f"Uploaded By {user.first_name}", url=f"tg://user?id={user.id}")
+                ]]
+                reply_markup = InlineKeyboardMarkup(btn)
+            else:
+                reply_markup = False
+                
             # try to upload file
             if (await db.get_upload_as_doc(update.from_user.id)) is False:
                 thumbnail = await DocumentThumb(bot, update)
