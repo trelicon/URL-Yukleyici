@@ -4,10 +4,10 @@ class Translation(object):
     START_TEXT = """Merhaba {},\n
 Ben bir URL Yükleyicisiyim!
 Bu Botu kullanarak HTTP/HTTPS bağlantılarını yükleyebilirsiniz!"""
-    FORMAT_SELECTION = """<b>İstenen formatı seçin:</b> 👇\n<u>belirtilen</u> <i>dosya boyutu yaklaşık olabilir.</i>"""
+    FORMAT_SELECTION = """**İstenen formatı seçin:** 👇\n--belirtilen-- __dosya boyutu yaklaşık olabilir.__"""
     SET_CUSTOM_USERNAME_PASSWORD = """\n\nBu videoyu indirmek istiyorsanız, aşağıdaki biçimi sağlayın:
     URL | dosyaadı | kullanıcıadı | parola"""
-    DOWNLOAD_START = "<b>Dosya Adı:</b> {}\n\nİndiriliyor.. 📥"
+    DOWNLOAD_START = "**Dosya Adı:** {}\n\nİndiriliyor.. 📥"
     UPLOAD_START = "Yükleniyor.."
     START_BUTTONS = InlineKeyboardMarkup(
         [[
@@ -22,7 +22,7 @@ Bu Botu kullanarak HTTP/HTTPS bağlantılarını yükleyebilirsiniz!"""
     SAVED_CUSTOM_THUMB_NAIL = "**✔️ Kapak fotoğrafı kaydedildi.**"
     DEL_ETED_CUSTOM_THUMB_NAIL = "**🗑️ Kapak fotoğrafı başarıyla temizlendi.**"
     CUSTOM_CAPTION_UL_FILE = "{}"
-    NO_VOID_FORMAT_FOUND = "<b>YT-DLP</b>:\n{}"
+    NO_VOID_FORMAT_FOUND = "**YT-DLP**:\n{}"
     SETTINGS = "**Ayarlarlarınızı buradan yapabilirsiniz.**"
     HELP_TEXT = """Nasıl kullanılır? Aşağıdaki adımları izleyin!
 
