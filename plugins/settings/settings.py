@@ -1,6 +1,6 @@
 import asyncio
-from pyrogram import enums
 from pyrogram import types, errors
+from pyrogram.enums import MessageEntityType
 from config import LOGGER
 from database.database import db
 
@@ -9,7 +9,7 @@ async def Settings(m: "types.Message"):
     usr_id = m.chat.id
     is_command = m.entities[0].type
 
-    if is_command == enums.MessageEntityType.BOT_COMMAND:
+    if is_command == MessageEntityType.BOT_COMMAND:
         message = await m.reply_text('**İşleniyor..**', reply_to_message_id=m.id,)
         message = message.edit
     else:
