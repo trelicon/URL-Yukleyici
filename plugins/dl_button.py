@@ -1,10 +1,3 @@
-import logging
-
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
-                    level=logging.INFO)
-LOGGER = logging.getLogger(__name__)
-
 import os
 import time
 import asyncio
@@ -21,6 +14,13 @@ from functions.display_progress import progress_for_pyrogram, humanbytes, TimeFo
 from functions.help_Nekmo_ffmpeg import VideoThumb, VideoMetaData, VMMetaData, DocumentThumb, AudioMetaData
 from config import DOWNLOAD_LOCATION, TG_MAX_FILE_SIZE, LOG_CHANNEL, PROCESS_MAX_TIMEOUT, CHUNK_SIZE, PROMO
 
+import logging
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
+                    level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
+
 
 async def ddl_call_back(bot, update):
     LOGGER.info(update)
@@ -31,13 +31,13 @@ async def ddl_call_back(bot, update):
     message = update.message
     user_id = update.from_user.id
     chat_id = message.chat.id
-    
+
     thumb_image_path = DOWNLOAD_LOCATION + \
                        "/" + str(user_id) + f'{random}' + ".jpg"
-    
+
     yt_dlp_url = message.reply_to_message.text
     custom_file_name = os.path.basename(yt_dlp_url[:100])
-    
+
     if "|" in yt_dlp_url:
         url_parts = yt_dlp_url.split("|")
         if len(url_parts) == 2:
@@ -88,7 +88,6 @@ async def ddl_call_back(bot, update):
     if not os.path.isdir(tmp_directory_for_each_user):
         os.makedirs(tmp_directory_for_each_user)
     download_directory = os.path.join(tmp_directory_for_each_user, custom_file_name)
-    command_to_exec = []
     async with aiohttp.ClientSession() as session:
         c_time = time.time()
         try:
@@ -115,7 +114,6 @@ async def ddl_call_back(bot, update):
             chat_id=chat_id,
             message_id=message.id
         )
-        file_size = TG_MAX_FILE_SIZE + 1
         try:
             file_size = os.stat(download_directory).st_size
         except FileNotFoundError as exc:
@@ -162,7 +160,7 @@ async def ddl_call_back(bot, update):
                             start_time
                         )
                     )
-                elif (await db.get_upload_as_doc(user_id)) is False:
+                elif (await db.get_upload_as_doc(user_id)) is True:
                     thumbnail = await DocumentThumb(bot, update)
                     await message.reply_to_message.reply_chat_action(ChatAction.UPLOAD_DOCUMENT)
                     copy = await bot.send_document(
@@ -181,7 +179,7 @@ async def ddl_call_back(bot, update):
                     )
                 else:
                     width, height, duration = await VideoMetaData(download_directory)
-                    thumb_image_path = await VideoThumb(bot, update, duration, download_directory)
+                    thumb_image_path = await VideoThumb(bot, update, duration, download_directory, random)
                     await message.reply_to_message.reply_chat_action(ChatAction.UPLOAD_VIDEO)
                     copy = await bot.send_video(
                         chat_id=chat_id,
