@@ -1,11 +1,3 @@
-import logging
-
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
-                    level=logging.INFO)
-LOGGER = logging.getLogger(__name__)
-
-
 import os
 import time
 import random
@@ -16,6 +8,13 @@ from database.database import db
 from config import DOWNLOAD_LOCATION
 from hachoir.parser import createParser
 from hachoir.metadata import extractMetadata
+
+import logging
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
+                    level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
 
 
 async def DocumentThumb(bot, update):
@@ -32,11 +31,10 @@ async def DocumentThumb(bot, update):
 
     return thumbnail
 
-  
-async def VideoThumb(bot, update, duration, path, vrandom):
 
+async def VideoThumb(bot, update, duration, path, vrandom):
     default_thumb_image_path = DOWNLOAD_LOCATION + \
-                       "/" + str(update.from_user.id) + f'{vrandom}' + ".jpg"
+                               "/" + str(update.from_user.id) + f'{vrandom}' + ".jpg"
     thumb_image_path = DOWNLOAD_LOCATION + \
                        "/" + str(update.from_user.id) + ".jpg"
     db_thumbnail = await db.get_thumbnail(update.from_user.id)
@@ -89,9 +87,8 @@ async def AudioMetaData(download_directory):
             duration = metadata.get('duration').seconds
 
     return duration
-    
 
-    
+
 async def place_water_mark(input_file, output_file, water_mark_file):
     watermarked_file = output_file + ".watermark.png"
     metadata = extractMetadata(createParser(input_file))
@@ -141,10 +138,11 @@ async def place_water_mark(input_file, output_file, water_mark_file):
     t_response = stdout.decode().strip()
     return output_file
 
+
 async def take_screen_shot(video_file, output_directory, ttl):
     # https://stackoverflow.com/a/13891070/4723940
     out_put_file_name = output_directory + \
-        "/" + str(time.time()) + ".jpg"
+                        "/" + str(time.time()) + ".jpg"
     file_genertor_command = [
         "ffmpeg",
         "-ss",
@@ -171,10 +169,11 @@ async def take_screen_shot(video_file, output_directory, ttl):
     else:
         return None
 
+
 async def cult_small_video(video_file, output_directory, start_time, end_time):
     # https://stackoverflow.com/a/13891070/4723940
     out_put_file_name = output_directory + \
-        "/" + str(round(time.time())) + ".mp4"
+                        "/" + str(round(time.time())) + ".mp4"
     file_genertor_command = [
         "ffmpeg",
         "-i",
@@ -204,13 +203,14 @@ async def cult_small_video(video_file, output_directory, start_time, end_time):
     else:
         return None
 
+
 async def generate_screen_shots(
-    video_file,
-    output_directory,
-    is_watermarkable,
-    wf,
-    min_duration,
-    no_of_photos
+        video_file,
+        output_directory,
+        is_watermarkable,
+        wf,
+        min_duration,
+        no_of_photos
 ):
     metadata = extractMetadata(createParser(video_file))
     duration = 0
