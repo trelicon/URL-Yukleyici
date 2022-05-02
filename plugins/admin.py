@@ -20,6 +20,7 @@ from database.broadcast import broadcast_handler
 
 @Client.on_message(filters.command("status") & filters.user(OWNER_ID))
 async def status_handler(_, m: Message):
+    msg = await m.reply_text(text="`İşleniyor...`")
     heroku_api = "https://api.heroku.com"
     total, used, free = shutil.disk_usage(".")
     total = humanbytes(total)
@@ -40,9 +41,8 @@ async def status_handler(_, m: Message):
             Heroku = heroku3.from_key(HEROKU_API_KEY)
             app = Heroku.app(HEROKU_APP_NAME)
         else:
-            await m.reply_text(
-                text=text,
-                quote=True
+            await msg.edit(
+                text=text
             )
             return
 
@@ -86,17 +86,16 @@ async def status_handler(_, m: Message):
                 AppHours = math.floor(AppQuotaUsed / 60)
                 AppMinutes = math.floor(AppQuotaUsed % 60)
 
-                await m.reply_text(
+                await msg.edit(
                     f"**ℹ️ Dyno Kullanımı**\n\n`🟢 {app.name}`:\n"
                     f"• `{AppHours}` **Saat ve** `{AppMinutes}` **Dakika\n💯: {AppPercent}%**\n\n"
                     "**⚠️ Kalan Dyno**\n"
                     f"• `{hours}` **Saat ve** `{minutes}` **Dakika\n💯: {quota_percent}%**\n\n"
                     "**❌ Tahmini Kalan Süre**\n"
-                    f"• `{day}` **Gün**" + '\n\n' + text,
-                    quote=True
+                    f"• `{day}` **Gün**" + '\n\n' + text
                 )
     except Exception as e:
-        await m.reply_text(f"**Error:** `{e}`")
+        await msg.edit(f"**Error:** `{e}`")
 
 
 @Client.on_message(filters.command("broadcast") & filters.user(OWNER_ID) & filters.reply)
