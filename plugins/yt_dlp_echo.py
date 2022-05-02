@@ -21,8 +21,8 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from functions.utils import URL_REGEX
 
 
-@Client.on_message(filters.incoming & filters.regex(pattern=URL_REGEX))
-@Client.on_edited_message(filters.incoming & filters.regex(pattern=URL_REGEX))
+@Client.on_message(filters.private & filters.regex(pattern=URL_REGEX))
+@Client.on_edited_message(filters.private & filters.regex(pattern=URL_REGEX))
 async def echo(bot, update):
     if LOG_CHANNEL:
         try:
