@@ -6,7 +6,7 @@ from plugins.settings.settings import Settings
 from functions.forcesub import handle_force_subscribe
 
 
-@Client.on_message(filters.incoming & filters.command(["start", "help"]))
+@Client.on_message(filters.private & filters.command(["start", "help"]))
 async def start_handler(c: Client, m: "types.Message"):
     if not m.from_user:
         return await m.reply_text("Seni tanımıyorum ahbap.")
@@ -23,7 +23,7 @@ async def start_handler(c: Client, m: "types.Message"):
     )
 
 
-@Client.on_message(filters.incoming & filters.command(["ayarlar", "settings"]))
+@Client.on_message(filters.private & filters.command(["ayarlar", "settings"]))
 async def delete_thumb_handler(c: Client, m: "types.Message"):
     if not m.from_user:
         return await m.reply_text("Seni tanımıyorum ahbap.")
