@@ -1,4 +1,8 @@
 ## URL-Yükleyici
+
+![GitHub stars](https://img.shields.io/github/stars/Turkce-Botlar-Sohbet/URL-Yukleyici?style=social)
+![GitHub forks](https://img.shields.io/github/forks/Turkce-Botlar-Sohbet/URL-Yukleyici?style=social)
+
 ---
 
 Bağlantıları Yüklemek için Telegram Botu.
