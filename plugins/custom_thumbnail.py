@@ -7,7 +7,7 @@ from plugins.settings.settings import *
 from translation import Translation
 
 
-@Client.on_message(filters.incoming & filters.photo)
+@Client.on_message(filters.private & filters.photo)
 @Client.on_message(filters.command(["setthumb", "set_thumbnail"]) & filters.incoming & filters.reply)
 async def set_thumbnail(c: Client, m: "types.Message"):
     if (not m.reply_to_message) or (not m.reply_to_message.photo):
@@ -26,7 +26,7 @@ async def set_thumbnail(c: Client, m: "types.Message"):
     await editable.edit(Translation.SAVED_CUSTOM_THUMB_NAIL)
 
 
-@Client.on_message(filters.incoming & filters.command(["delthumb", "delete_thumbnail"]))
+@Client.on_message(filters.private & filters.command(["delthumb", "delete_thumbnail"]))
 async def delete_thumbnail(c: Client, m: "types.Message"):
     if not m.from_user:
         return await m.reply_text("Seni tanımıyorum ahbap.")
@@ -44,7 +44,7 @@ async def delete_thumbnail(c: Client, m: "types.Message"):
     )
 
 
-@Client.on_message(filters.incoming & filters.command(["showthumb", "show_thumbnail"]))
+@Client.on_message(filters.private & filters.command(["showthumb", "show_thumbnail"]))
 async def show_thumbnail(c: Client, m: "types.Message"):
     if not m.from_user:
         return await m.reply_text("Seni tanımıyorum ahbap.")
@@ -58,10 +58,10 @@ async def show_thumbnail(c: Client, m: "types.Message"):
         await c.send_photo(
             chat_id=m.chat.id,
             photo=thumbnail,
-            caption=f"Ayarlı Thumbnail",
+            caption=f"**Ayarlı Thumbnail.**",
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("🗑️ Sil", callback_data="deleteThumbnail")]]
             ),
             reply_to_message_id=m.id)
     else:
-        await m.reply_text(text=f"Thumbnail Bulunamadı.")
+        await m.reply_text(text=f"**Thumbnail Bulunamadı.**")
